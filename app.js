@@ -207,26 +207,27 @@ function getPhenotype(genotype, orgKey) {
 
   ph.text = ph.textParts.join(", ");
   ph.visual = ph.symbols.join(" ");
+  ph.key = ph.text + "|" + ph.visual;
 
   return ph;
 }
 
 /* ===============================
-   7. ANALYSIS (WITH EMOJI)
+   7. ANALYSIS (SAFE)
    =============================== */
 
 function analyzePhenotypes(cells) {
   const stats = {};
 
   cells.forEach(p => {
-    if (!stats[p.text]) {
-      stats[p.text] = {
+    if (!stats[p.key]) {
+      stats[p.key] = {
         text: p.text,
         visual: p.visual,
         count: 0
       };
     }
-    stats[p.text].count++;
+    stats[p.key].count++;
   });
 
   const total = cells.length;
@@ -240,7 +241,7 @@ function analyzePhenotypes(cells) {
 }
 
 /* ===============================
-   8. RENDERS (EMOTIONAL)
+   8. RENDERS
    =============================== */
 
 function renderPhenotypeVisualFromAnalysis(a) {
