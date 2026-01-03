@@ -142,7 +142,7 @@ function mutateAllele(allele) {
   return allele;
 }
 
-// --- Proper crossover between homologous chromosomes ---
+// --- Proper crossover ---
 function performCrossover(chrom1, chrom2) {
   const rate = Number(crossRate.value) / 100;
   if (Math.random() >= rate) return [chrom1, chrom2];
@@ -168,7 +168,6 @@ function formGamete(genotypes) {
   [chrom1, chrom2] = performCrossover(chrom1, chrom2);
 
   const selected = Math.random() < 0.5 ? chrom1 : chrom2;
-
   return selected.map(a => mutateAllele(a)).join("");
 }
 
@@ -296,5 +295,27 @@ function runSimulation() {
 organism.onchange = initParents;
 crossType.onchange = initParents;
 runCross.onclick = runSimulation;
+
+/* ---- SLIDER REACTIVITY ---- */
+
+mutationRate.oninput = () => {
+  mutationValue.textContent = `${mutationRate.value}%`;
+  if (mode.value === MODES.EXPERIMENT) runSimulation();
+};
+
+crossRate.oninput = () => {
+  crossValue.textContent = `${crossRate.value}%`;
+  if (mode.value === MODES.EXPERIMENT) runSimulation();
+};
+
+mode.onchange = () => {
+  const isDemo = mode.value === MODES.DEMO;
+  mutationRate.disabled = isDemo;
+  crossRate.disabled = isDemo;
+};
+
+mutationValue.textContent = `${mutationRate.value}%`;
+crossValue.textContent = `${crossRate.value}%`;
+mode.onchange();
 
 initParents();
