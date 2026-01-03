@@ -2,7 +2,6 @@
    VIRTUAL GENETIC LAB – CORE LOGIC
    Level: Grade 9 (Advanced)
    DEMO: Punnett table (mono / di / tri)
-   EXPERIMENT: random simulation (mutation + crossover)
    ===================================================== */
 
 /* ===============================
@@ -24,16 +23,16 @@ const organisms = {
     genes: ["A", "B", "C"],
     traits: {
       A: {
-        dominant: { text: "Карі очі", icon: "eye-brown", symbol: "👁️🟤" },
-        recessive: { text: "Блакитні очі", icon: "eye-blue", symbol: "👁️🔵" }
+        dominant: { text: "Карі очі", symbol: "👁️🟤" },
+        recessive: { text: "Блакитні очі", symbol: "👁️🔵" }
       },
       B: {
-        dominant: { text: "Темне волосся", icon: "hair-dark", symbol: "🧑🏽‍🦱" },
-        recessive: { text: "Світле волосся", icon: "hair-light", symbol: "🧑🏼‍🦱" }
+        dominant: { text: "Темне волосся", symbol: "🧑🏽‍🦱" },
+        recessive: { text: "Світле волосся", symbol: "🧑🏼‍🦱" }
       },
       C: {
-        dominant: { text: "Є веснянки", icon: "freckles-yes", symbol: "✨" },
-        recessive: { text: "Немає веснянок", icon: "freckles-no", symbol: "🚫✨" }
+        dominant: { text: "Є веснянки", symbol: "✨" },
+        recessive: { text: "Немає веснянок", symbol: "🚫✨" }
       }
     }
   },
@@ -43,16 +42,16 @@ const organisms = {
     genes: ["A", "B", "C"],
     traits: {
       A: {
-        dominant: { text: "Темна шерсть", icon: "fur-dark", symbol: "🐈‍⬛" },
-        recessive: { text: "Світла шерсть", icon: "fur-light", symbol: "🐈" }
+        dominant: { text: "Темна шерсть", symbol: "🐈‍⬛" },
+        recessive: { text: "Світла шерсть", symbol: "🐈" }
       },
       B: {
-        dominant: { text: "Зелені очі", icon: "eye-green", symbol: "👁️🟢" },
-        recessive: { text: "Блакитні очі", icon: "eye-blue", symbol: "👁️🔵" }
+        dominant: { text: "Зелені очі", symbol: "👁️🟢" },
+        recessive: { text: "Блакитні очі", symbol: "👁️🔵" }
       },
       C: {
-        dominant: { text: "Коротка шерсть", icon: "fur-short", symbol: "✂️" },
-        recessive: { text: "Довга шерсть", icon: "fur-long", symbol: "🧶" }
+        dominant: { text: "Коротка шерсть", symbol: "✂️" },
+        recessive: { text: "Довга шерсть", symbol: "🧶" }
       }
     }
   },
@@ -62,16 +61,16 @@ const organisms = {
     genes: ["A", "B", "C"],
     traits: {
       A: {
-        dominant: { text: "Червоні пелюстки", icon: "petal-red", symbol: "🌹" },
-        recessive: { text: "Білі пелюстки", icon: "petal-white", symbol: "🤍🌹" }
+        dominant: { text: "Червоні пелюстки", symbol: "🌹" },
+        recessive: { text: "Білі пелюстки", symbol: "🤍🌹" }
       },
       B: {
-        dominant: { text: "Махрова квітка", icon: "flower-double", symbol: "🌸" },
-        recessive: { text: "Проста квітка", icon: "flower-simple", symbol: "🌼" }
+        dominant: { text: "Махрова квітка", symbol: "🌸" },
+        recessive: { text: "Проста квітка", symbol: "🌼" }
       },
       C: {
-        dominant: { text: "Високий кущ", icon: "bush-tall", symbol: "⬆️🌿" },
-        recessive: { text: "Низький кущ", icon: "bush-low", symbol: "⬇️🌿" }
+        dominant: { text: "Високий кущ", symbol: "⬆️🌿" },
+        recessive: { text: "Низький кущ", symbol: "⬇️🌿" }
       }
     }
   }
@@ -82,27 +81,22 @@ const organisms = {
    =============================== */
 
 function getActiveGenes() {
-  const count = Number(crossType.value);
-  return organisms[organism.value].genes.slice(0, count);
+  return organisms[organism.value].genes.slice(0, Number(crossType.value));
 }
 
 function createParentUI(containerId) {
-  const genes = getActiveGenes();
   const el = document.getElementById(containerId);
   el.innerHTML = "";
 
-  genes.forEach(gene => {
+  getActiveGenes().forEach(gene => {
     const select = document.createElement("select");
-    const D = gene;
-    const r = gene.toLowerCase();
-
-    [D + D, D + r, r + r].forEach(v => {
-      const opt = document.createElement("option");
-      opt.value = v;
-      opt.textContent = v;
-      select.appendChild(opt);
-    });
-
+    [gene + gene, gene + gene.toLowerCase(), gene.toLowerCase() + gene.toLowerCase()]
+      .forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v;
+        select.appendChild(opt);
+      });
     el.appendChild(select);
   });
 }
@@ -119,12 +113,10 @@ function initParents() {
 
 function generateGametesDeterministic(genotypes) {
   let gametes = [""];
-
   genotypes.forEach(pair => {
     const alleles = pair[0] === pair[1] ? [pair[0]] : [pair[0], pair[1]];
     gametes = gametes.flatMap(g => alleles.map(a => g + a));
   });
-
   return gametes;
 }
 
@@ -133,137 +125,88 @@ function generateGametesDeterministic(genotypes) {
    =============================== */
 
 function getPhenotype(genotype, orgKey) {
-  const traits = organisms[orgKey].traits;
   const phenotype = { traits: [], textParts: [] };
-
   Object.entries(genotype).forEach(([gene, pair]) => {
-    const dominant = pair.includes(gene);
-    const data = dominant ? traits[gene].dominant : traits[gene].recessive;
+    const tr = organisms[orgKey].traits[gene];
+    const data = pair.includes(gene) ? tr.dominant : tr.recessive;
     phenotype.traits.push(data);
     phenotype.textParts.push(data.text);
   });
-
   phenotype.text = phenotype.textParts.join(", ");
   return phenotype;
 }
 
 /* ===============================
-   6. PHENOTYPE ANALYSIS
+   6. ANALYSIS
    =============================== */
 
 function analyzePhenotypesFromPunnett(cells) {
   const stats = {};
-  cells.forEach(ph => {
-    stats[ph.text] = (stats[ph.text] || 0) + 1;
-  });
-
+  cells.forEach(p => stats[p.text] = (stats[p.text] || 0) + 1);
   const total = cells.length;
-  return Object.entries(stats)
-    .map(([text, count]) => ({
-      text,
-      count,
-      percent: ((count / total) * 100).toFixed(1)
-    }))
-    .sort((a, b) => b.count - a.count);
+  return Object.entries(stats).map(([text, count]) => ({
+    text,
+    count,
+    percent: ((count / total) * 100).toFixed(1)
+  }));
 }
 
 /* ===============================
-   7. VISUAL RENDERS
+   7. RENDERS
    =============================== */
 
 function renderAlleleLegend() {
   const el = document.getElementById("alleleLegend");
-  if (!el) return;
-
   el.innerHTML = "";
-  const traits = organisms[organism.value].traits;
-
-  Object.entries(traits).forEach(([gene, tr]) => {
+  Object.entries(organisms[organism.value].traits).forEach(([g, t]) => {
     el.innerHTML += `
       <div class="allele-item">
-        <strong>${gene}</strong> — ${tr.dominant.text} ${tr.dominant.symbol}<br>
-        <strong>${gene.toLowerCase()}</strong> — ${tr.recessive.text} ${tr.recessive.symbol}
-      </div>
-    `;
+        <strong>${g}</strong> — ${t.dominant.text} ${t.dominant.symbol}<br>
+        <strong>${g.toLowerCase()}</strong> — ${t.recessive.text} ${t.recessive.symbol}
+      </div>`;
   });
 }
 
 function renderPhenotypeVisualFromAnalysis(analysis) {
-  const container = document.getElementById("phenotypeVisual");
-  container.innerHTML = "";
-
-  analysis.forEach(item => {
+  const el = document.getElementById("phenotypeVisual");
+  el.innerHTML = "";
+  analysis.forEach(a => {
     const symbols = [];
     Object.values(organisms[organism.value].traits).forEach(tr => {
-      if (item.text.includes(tr.dominant.text)) symbols.push(tr.dominant.symbol);
-      if (item.text.includes(tr.recessive.text)) symbols.push(tr.recessive.symbol);
+      if (a.text.includes(tr.dominant.text)) symbols.push(tr.dominant.symbol);
+      if (a.text.includes(tr.recessive.text)) symbols.push(tr.recessive.symbol);
     });
-
-    container.innerHTML += `
+    el.innerHTML += `
       <div class="phenotype-trait">
         <div class="phenotype-symbol">${symbols.join(" ")}</div>
-        <div class="phenotype-text">${item.text} (${item.percent}%)</div>
-      </div>
-    `;
+        <div class="phenotype-text">${a.text} (${a.percent}%)</div>
+      </div>`;
+  });
+}
+
+function renderPhenotypeList(analysis) {
+  const list = document.getElementById("phenotypeList");
+  list.innerHTML = "";
+  analysis.forEach(a => {
+    const li = document.createElement("li");
+    li.textContent = `${a.text} — ${a.percent}% (${a.count})`;
+    list.appendChild(li);
   });
 }
 
 function renderPhenotypeStats(analysis) {
   const el = document.getElementById("phenotypeStats");
-  if (!el) return;
-
   el.innerHTML = "";
   analysis.forEach(a => {
-    el.innerHTML += `
-      <div class="phenotype-stat">
-        <span>${a.text}</span> — ${a.percent}% (${a.count})
-      </div>
-    `;
+    el.innerHTML += `<div class="phenotype-stat">
+      <span>${a.text}</span> — ${a.percent}% (${a.count})
+    </div>`;
   });
 }
 
 function renderExplanationFromAnalysis(analysis) {
   const el = document.getElementById("explanationText");
-  let text = "Аналіз фенотипів потомства:\n\n";
-
-  analysis.forEach(a => {
-    text += `• ${a.text} — ${a.percent}%\n`;
-  });
-
-  text += "\nСпіввідношення фенотипів відповідає законам Менделя.";
-  el.textContent = text;
-}
-
-/* ===============================
-   7.1 PHENOTYPE CHART (CANVAS)
-   =============================== */
-
-function renderPhenotypeChart(analysis) {
-  const canvas = document.getElementById("chart");
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  const w = canvas.width;
-  const h = canvas.height;
-
-  ctx.clearRect(0, 0, w, h);
-
-  const padding = 40;
-  const barWidth = (w - padding * 2) / analysis.length;
-
-  analysis.forEach((a, i) => {
-    const barHeight = (a.percent / 100) * (h - padding * 2);
-    const x = padding + i * barWidth + barWidth / 2;
-    const y = h - padding - barHeight;
-
-    ctx.fillStyle = "#58a6ff";
-    ctx.fillRect(x - barWidth / 4, y, barWidth / 2, barHeight);
-
-    ctx.fillStyle = "#e6edf3";
-    ctx.font = "12px Segoe UI";
-    ctx.textAlign = "center";
-    ctx.fillText(`${a.percent}%`, x, y - 6);
-  });
+  el.textContent = analysis.map(a => `• ${a.text} — ${a.percent}%`).join("\n");
 }
 
 /* ===============================
@@ -271,51 +214,21 @@ function renderPhenotypeChart(analysis) {
    =============================== */
 
 function renderPunnettTable(p1, p2) {
-  const container = document.getElementById("punnett");
-  container.innerHTML = "";
-
   const g1 = generateGametesDeterministic(p1);
   const g2 = generateGametesDeterministic(p2);
+  const phenotypes = [];
 
-  const table = document.createElement("table");
-  table.className = "punnett-table";
+  g1.forEach(r => g2.forEach(c => {
+    const genotype = {};
+    r.split("").forEach((a, i) => genotype[a.toUpperCase()] = [a, c[i]].sort().join(""));
+    phenotypes.push(getPhenotype(genotype, organism.value));
+  }));
 
-  table.innerHTML =
-    "<tr><th>♂ / ♀</th>" + g2.map(g => `<th>${g}</th>`).join("") + "</tr>";
+  const analysis = analyzePhenotypesFromPunnett(phenotypes);
 
-  const phenotypeCells = [];
-
-  g1.forEach(r => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<th>${r}</th>`;
-
-    g2.forEach(c => {
-      const genotype = {};
-      for (let i = 0; i < r.length; i++) {
-        const gene = r[i].toUpperCase();
-        genotype[gene] = [r[i], c[i]].sort().join("");
-      }
-
-      const ph = getPhenotype(genotype, organism.value);
-      phenotypeCells.push(ph);
-
-      tr.innerHTML += `
-        <td>
-          <strong>${Object.values(genotype).join(" ")}</strong>
-          <div>${ph.text}</div>
-          <div>${ph.traits.map(t => t.symbol).join(" ")}</div>
-        </td>`;
-    });
-
-    table.appendChild(tr);
-  });
-
-  container.appendChild(table);
-
-  const analysis = analyzePhenotypesFromPunnett(phenotypeCells);
   renderPhenotypeVisualFromAnalysis(analysis);
+  renderPhenotypeList(analysis);
   renderPhenotypeStats(analysis);
-  renderPhenotypeChart(analysis);
   renderExplanationFromAnalysis(analysis);
 }
 
@@ -326,10 +239,7 @@ function renderPunnettTable(p1, p2) {
 function runSimulation() {
   const p1 = [...parent1.querySelectorAll("select")].map(s => s.value);
   const p2 = [...parent2.querySelectorAll("select")].map(s => s.value);
-
-  if (mode.value === MODES.DEMO) {
-    renderPunnettTable(p1, p2);
-  }
+  renderPunnettTable(p1, p2);
 }
 
 /* ===============================
