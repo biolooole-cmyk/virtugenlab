@@ -1,0 +1,323 @@
+/* =====================================================
+   VIRTUAL GENETIC LAB — UI DESIGN SYSTEM
+   Dark Theme | Grade 9 Advanced
+   ===================================================== */
+
+/* ===============================
+   1. CSS VARIABLES (DESIGN TOKENS)
+   =============================== */
+
+:root {
+  --bg-main: #0e1117;
+  --bg-panel: #161b22;
+  --bg-card: #1c2128;
+
+  --text-main: #e6edf3;
+  --text-muted: #8b949e;
+
+  --accent: #58a6ff;
+  --accent-soft: rgba(88,166,255,0.15);
+
+  --border: #30363d;
+
+  --success: #3fb950;
+  --warning: #d29922;
+
+  /* 🧬 Генетичні кольори */
+  --dominant-bg: rgba(88,166,255,0.18);
+  --dominant-text: #79c0ff;
+
+  --recessive-bg: rgba(139,148,158,0.15);
+  --recessive-text: #8b949e;
+
+  --radius: 14px;
+  --radius-small: 8px;
+
+  --transition: 0.25s ease;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* ===============================
+   2. GLOBAL RESET
+   =============================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: radial-gradient(circle at top, #0e1117, #010409);
+  color: var(--text-main);
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* ===============================
+   3. APP LAYOUT
+   =============================== */
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ===============================
+   4. HEADER
+   =============================== */
+
+header {
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ===============================
+   5. PANELS & CARDS
+   =============================== */
+
+.panel,
+.parents,
+.results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: linear-gradient(180deg, var(--bg-card), var(--bg-panel));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.card.wide {
+  grid-column: span 2;
+}
+
+.card h3 {
+  margin-bottom: 14px;
+  font-size: 1.05rem;
+  color: var(--accent);
+}
+
+/* ===============================
+   6. FORM ELEMENTS
+   =============================== */
+
+label {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+select,
+input[type="number"],
+input[type="range"] {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+}
+
+/* ===============================
+   7. GENOTYPE INPUTS
+   =============================== */
+
+.genotype-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+/* ===============================
+   8. BUTTON
+   =============================== */
+
+.run-btn {
+  background: linear-gradient(135deg, var(--accent), #1f6feb);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 28px;
+  cursor: pointer;
+}
+
+/* ===============================
+   9. ICONS
+   =============================== */
+
+.icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 2px;
+}
+
+.eye-brown { background: #6f4e37; }
+.eye-green { background: #3fb950; }
+.eye-blue { background: #58a6ff; }
+
+.hair-dark { background: #2f2f2f; }
+.hair-light { background: #d2b48c; }
+
+.fur-dark { background: #444; }
+.fur-light { background: #d2b48c; }
+
+.freckles-yes { background: #a3714b; }
+.freckles-no { background: transparent; border: 1px dashed #555; }
+
+.petal-red { background: #d73a49; }
+.petal-white { background: #f0f6fc; }
+
+/* ===============================
+   10. PUNNETT TABLE
+   =============================== */
+
+.punnett-table {
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.punnett-table th,
+.punnett-table td {
+  border: 1px solid var(--border);
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.punnett-table th {
+  background: var(--bg-main);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.punnett-table td {
+  background: #0d1117;
+  transition: background var(--transition);
+}
+
+/* ===============================
+   10.1 DOMINANT / RECESSIVE HIGHLIGHT
+   =============================== */
+
+.allele-dominant {
+  background: var(--dominant-bg);
+  color: var(--dominant-text);
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.allele-recessive {
+  background: var(--recessive-bg);
+  color: var(--recessive-text);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+/* hover-підказка */
+.punnett-table td:hover {
+  background: rgba(88,166,255,0.08);
+}
+
+/* ===============================
+   10.2 LEGEND
+   =============================== */
+
+.punnett-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 0.75rem;
+  margin-bottom: 10px;
+}
+
+.punnett-legend .dominant {
+  color: var(--dominant-text);
+}
+
+.punnett-legend .recessive {
+  color: var(--recessive-text);
+}
+
+/* ===============================
+   11. PHENOTYPE VISUALIZATION
+   =============================== */
+
+#phenotypeVisual {
+  display: flex;
+  justify-content: center;
+}
+
+/* HUMAN */
+.human-visual {
+  width: 120px;
+  height: 160px;
+  background: #2d333b;
+  border-radius: 60px 60px 40px 40px;
+  position: relative;
+}
+
+.human-hair {
+  height: 40px;
+  border-radius: 60px 60px 20px 20px;
+}
+
+.human-eyes {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+/* CAT */
+.cat-visual {
+  width: 140px;
+  height: 90px;
+  background: #2d333b;
+  border-radius: 60px;
+  position: relative;
+}
+
+/* ROSE */
+.rose-flower {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.rose-bush {
+  width: 10px;
+  height: 40px;
+  background: #238636;
+  margin: auto;
+}
+
+/* ===============================
+   12. EXPLANATION
+   =============================== */
+
+.explanation p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  white-space: pre-line;
+}

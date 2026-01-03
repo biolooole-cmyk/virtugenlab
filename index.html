@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>🧬 Віртуальна генетична лабораторія</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Стилі -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+  <header>
+    <h1>🧬 Віртуальна генетична лабораторія</h1>
+    <p class="subtitle">Поглиблена модель спадковості (9 клас)</p>
+  </header>
+
+  <section class="panel">
+    <div class="card">
+      <h3>Основні налаштування</h3>
+      <label for="organism">Організм</label>
+      <select id="organism">
+        <option value="human" selected>Людина</option>
+        <option value="cat">Кіт</option>
+        <option value="rose">Роза</option>
+      </select>
+
+      <label for="crossType">Тип схрещування</label>
+      <select id="crossType">
+        <option value="1">Моногібридне</option>
+        <option value="2">Дигібридне</option>
+        <option value="3">Тригібридне</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h3>Генетичні параметри</h3>
+      <label for="mutationRate">Ймовірність мутацій</label>
+      <input type="range" id="mutationRate" min="0" max="10" step="1" value="0">
+      <span id="mutationValue">0%</span>
+
+      <label for="crossRate">Crossing-over</label>
+      <input type="range" id="crossRate" min="0" max="50" step="5" value="0">
+      <span id="crossValue">0%</span>
+    </div>
+
+    <div class="card">
+      <h3>Режим роботи</h3>
+      <label for="mode">Режим</label>
+      <select id="mode">
+        <option value="demo">Демонстрація (таблиця Пеннета)</option>
+        <option value="experiment">Віртуальний експеримент</option>
+      </select>
+
+      <label for="experimentCount">Кількість схрещувань</label>
+      <input type="number" id="experimentCount" min="10" step="10" value="100">
+    </div>
+  </section>
+
+  <section class="parents">
+    <div class="card">
+      <h3>Батько / Мати 1</h3>
+      <div id="parent1"></div>
+    </div>
+    <div class="card">
+      <h3>Батько / Мати 2</h3>
+      <div id="parent2"></div>
+    </div>
+  </section>
+
+  <section class="actions">
+    <button id="runCross" class="run-btn">▶ Запустити схрещування</button>
+  </section>
+
+  <section class="results">
+    <div class="card wide">
+      <h3>Таблиця Пеннета / Результати експерименту</h3>
+      <div id="punnett"></div>
+    </div>
+
+    <div class="card">
+      <h3>Фенотипи потомства</h3>
+      <ul id="phenotypeList"></ul>
+      <canvas id="chart" width="300" height="300"></canvas>
+    </div>
+  </section>
+
+  <section class="card phenotype-visual">
+    <h3>Візуалізація фенотипу</h3>
+    <div id="phenotypeVisual"></div>
+  </section>
+
+  <section class="card explanation">
+    <h3>Пояснення результатів</h3>
+    <p id="explanationText"></p>
+  </section>
+
+  <footer>
+    <p>Навчальна модель. Реальна генетика спрощена для освітніх цілей.</p>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
