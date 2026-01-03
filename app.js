@@ -6,6 +6,32 @@
    ===================================================== */
 
 /* ===============================
+   0. DOM REFERENCES (CRITICAL)
+   =============================== */
+
+const organism = document.getElementById("organism");
+const crossType = document.getElementById("crossType");
+const mode = document.getElementById("mode");
+
+const parent1 = document.getElementById("parent1");
+const parent2 = document.getElementById("parent2");
+
+const runCross = document.getElementById("runCross");
+
+const mutationRate = document.getElementById("mutationRate");
+const crossRate = document.getElementById("crossRate");
+const mutationValue = document.getElementById("mutationValue");
+const crossValue = document.getElementById("crossValue");
+const experimentCount = document.getElementById("experimentCount");
+
+const punnett = document.getElementById("punnett");
+const phenotypeVisual = document.getElementById("phenotypeVisual");
+const phenotypeList = document.getElementById("phenotypeList");
+const phenotypeStats = document.getElementById("phenotypeStats");
+const explanationText = document.getElementById("explanationText");
+const alleleLegend = document.getElementById("alleleLegend");
+
+/* ===============================
    1. GLOBAL CONFIG
    =============================== */
 
@@ -187,17 +213,16 @@ function analyzePhenotypes(cells) {
 }
 
 /* ===============================
-   8. RENDER HELPERS
+   8. RENDERS
    =============================== */
 
 function renderPhenotypeVisualFromAnalysis(a) {
-  const el = phenotypeVisual;
-  el.innerHTML = "";
+  phenotypeVisual.innerHTML = "";
   a.forEach(p => {
     const d = document.createElement("div");
     d.className = "phenotype-trait";
     d.innerHTML = `<div class="phenotype-text">${p.text}<br>${p.percent}%</div>`;
-    el.appendChild(d);
+    phenotypeVisual.appendChild(d);
   });
 }
 
@@ -254,13 +279,12 @@ function renderAll(a) {
 }
 
 /* ===============================
-   9. DEMO MODE
+   9. MODES
    =============================== */
 
 function runDemo(p1, p2) {
   const g1 = generateGametesDeterministic(p1);
   const g2 = generateGametesDeterministic(p2);
-
   renderPunnettTable(g1, g2);
 
   const phenotypes = [];
@@ -272,10 +296,6 @@ function runDemo(p1, p2) {
 
   renderAll(analyzePhenotypes(phenotypes));
 }
-
-/* ===============================
-   10. EXPERIMENT MODE
-   =============================== */
 
 function runExperiment(p1, p2) {
   punnett.innerHTML = "";
@@ -295,7 +315,7 @@ function runExperiment(p1, p2) {
 }
 
 /* ===============================
-   11. CONTROLLER
+   10. CONTROLLER
    =============================== */
 
 function runSimulation() {
@@ -305,7 +325,7 @@ function runSimulation() {
 }
 
 /* ===============================
-   12. EVENTS
+   11. EVENTS
    =============================== */
 
 organism.onchange = initParents;
