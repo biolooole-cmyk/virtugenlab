@@ -110,6 +110,7 @@ function createParentUI(containerId) {
 function initParents() {
   createParentUI("parent1");
   createParentUI("parent2");
+  renderAlleleLegend();
 }
 
 /* ===============================
@@ -118,28 +119,13 @@ function initParents() {
 
 function generateGametesDeterministic(genotypes) {
   let gametes = [""];
+
   genotypes.forEach(pair => {
     const alleles = pair[0] === pair[1] ? [pair[0]] : [pair[0], pair[1]];
     gametes = gametes.flatMap(g => alleles.map(a => g + a));
   });
+
   return gametes;
-}
-
-function mutateAllele(a, rate) {
-  if (Math.random() * 100 < rate) {
-    return a === a.toUpperCase() ? a.toLowerCase() : a.toUpperCase();
-  }
-  return a;
-}
-
-function generateGameteRandom(genotypes, mutation, crossover) {
-  let g = "";
-  for (let i = 0; i < genotypes.length; i++) {
-    let allele = Math.random() < 0.5 ? genotypes[i][0] : genotypes[i][1];
-    if (i > 0 && Math.random() * 100 < crossover) allele = g[i - 1];
-    g += mutateAllele(allele, mutation);
-  }
-  return g;
 }
 
 /* ===============================
@@ -153,7 +139,6 @@ function getPhenotype(genotype, orgKey) {
   Object.entries(genotype).forEach(([gene, pair]) => {
     const dominant = pair.includes(gene);
     const data = dominant ? traits[gene].dominant : traits[gene].recessive;
-
     phenotype.traits.push(data);
     phenotype.textParts.push(data.text);
   });
@@ -163,32 +148,96 @@ function getPhenotype(genotype, orgKey) {
 }
 
 /* ===============================
-   6. VISUALIZATION
+   6. PHENOTYPE ANALYSIS
    =============================== */
 
-function renderPhenotypeVisual(phenotype) {
-  const container = document.getElementById("phenotypeVisual");
-  container.innerHTML = "";
-
-  phenotype.traits.forEach(t => {
-    const block = document.createElement("div");
-    block.className = "phenotype-trait";
-    block.innerHTML = `
-      <div class="phenotype-symbol">${t.symbol}</div>
-      <div class="phenotype-text">${t.text}</div>
-    `;
-    container.appendChild(block);
+function analyzePhenotypesFromPunnett(cells) {
+  const stats = {};
+  cells.forEach(ph => {
+    stats[ph.text] = (stats[ph.text] || 0) + 1;
   });
-}
 
-function renderExplanation(phenotype) {
-  document.getElementById("explanationText").textContent =
-    `Отриманий фенотип потомства:\n${phenotype.text}.\n` +
-    `Прояв ознак визначається домінантними та рецесивними алелями батьків.`;
+  const total = cells.length;
+  return Object.entries(stats)
+    .map(([text, count]) => ({
+      text,
+      count,
+      percent: ((count / total) * 100).toFixed(1)
+    }))
+    .sort((a, b) => b.count - a.count);
 }
 
 /* ===============================
-   7. PUNNETT TABLE (DEMO)
+   7. RENDER HELPERS
+   =============================== */
+
+function renderAlleleLegend() {
+  const el = document.getElementById("alleleLegend");
+  if (!el) return;
+
+  el.innerHTML = "";
+  const traits = organisms[organism.value].traits;
+
+  Object.entries(traits).forEach(([gene, tr]) => {
+    el.innerHTML += `
+      <div class="allele-item">
+        <strong>${gene}</strong> — ${tr.dominant.text} ${tr.dominant.symbol}<br>
+        <strong>${gene.toLowerCase()}</strong> — ${tr.recessive.text} ${tr.recessive.symbol}
+      </div>
+    `;
+  });
+}
+
+function renderPhenotypeVisualFromAnalysis(analysis) {
+  const container = document.getElementById("phenotypeVisual");
+  container.innerHTML = "";
+
+  analysis.forEach(item => {
+    const symbols = [];
+    const orgTraits = organisms[organism.value].traits;
+
+    Object.values(orgTraits).forEach(tr => {
+      if (item.text.includes(tr.dominant.text)) symbols.push(tr.dominant.symbol);
+      if (item.text.includes(tr.recessive.text)) symbols.push(tr.recessive.symbol);
+    });
+
+    container.innerHTML += `
+      <div class="phenotype-trait">
+        <div class="phenotype-symbol">${symbols.join(" ")}</div>
+        <div class="phenotype-text">${item.text} (${item.percent}%)</div>
+      </div>
+    `;
+  });
+}
+
+function renderPhenotypeStats(analysis) {
+  const el = document.getElementById("phenotypeStats");
+  if (!el) return;
+
+  el.innerHTML = "";
+  analysis.forEach(a => {
+    el.innerHTML += `
+      <div class="phenotype-stat">
+        <span>${a.text}</span> — ${a.percent}% (${a.count})
+      </div>
+    `;
+  });
+}
+
+function renderExplanationFromAnalysis(analysis) {
+  const el = document.getElementById("explanationText");
+  let text = "Аналіз фенотипів потомства:\n\n";
+
+  analysis.forEach(a => {
+    text += `• ${a.text} — ${a.percent}%\n`;
+  });
+
+  text += "\nСпіввідношення фенотипів відповідає законам Менделя.";
+  el.textContent = text;
+}
+
+/* ===============================
+   8. PUNNETT TABLE (DEMO)
    =============================== */
 
 function renderPunnettTable(p1, p2) {
@@ -204,7 +253,7 @@ function renderPunnettTable(p1, p2) {
   table.innerHTML =
     "<tr><th>♂ / ♀</th>" + g2.map(g => `<th>${g}</th>`).join("") + "</tr>";
 
-  let examplePhenotype = null;
+  const phenotypeCells = [];
 
   g1.forEach(r => {
     const tr = document.createElement("tr");
@@ -218,7 +267,7 @@ function renderPunnettTable(p1, p2) {
       }
 
       const ph = getPhenotype(genotype, organism.value);
-      if (!examplePhenotype) examplePhenotype = ph;
+      phenotypeCells.push(ph);
 
       tr.innerHTML += `
         <td>
@@ -233,55 +282,14 @@ function renderPunnettTable(p1, p2) {
 
   container.appendChild(table);
 
-  if (examplePhenotype) {
-    renderPhenotypeVisual(examplePhenotype);
-    renderExplanation(examplePhenotype);
-  }
+  const analysis = analyzePhenotypesFromPunnett(phenotypeCells);
+  renderPhenotypeVisualFromAnalysis(analysis);
+  renderPhenotypeStats(analysis);
+  renderExplanationFromAnalysis(analysis);
 }
 
 /* ===============================
-   8. STATISTICS
-   =============================== */
-
-function renderPhenotypeStats(stats) {
-  const list = document.getElementById("phenotypeList");
-  list.innerHTML = "";
-
-  Object.entries(stats).forEach(([k, v]) => {
-    const li = document.createElement("li");
-    li.textContent = `${k} — ${v}`;
-    list.appendChild(li);
-  });
-}
-
-/* ===============================
-   9. EXPERIMENT
-   =============================== */
-
-function runExperiment(p1, p2, cfg) {
-  const stats = {};
-  let lastPhenotype = null;
-
-  for (let i = 0; i < cfg.runs; i++) {
-    const g1 = generateGameteRandom(p1, cfg.mutation, cfg.crossover);
-    const g2 = generateGameteRandom(p2, cfg.mutation, cfg.crossover);
-
-    const genotype = {};
-    for (let j = 0; j < g1.length; j++) {
-      const gene = g1[j].toUpperCase();
-      genotype[gene] = [g1[j], g2[j]].sort().join("");
-    }
-
-    const ph = getPhenotype(genotype, organism.value);
-    lastPhenotype = ph;
-    stats[ph.text] = (stats[ph.text] || 0) + 1;
-  }
-
-  return { stats, lastPhenotype };
-}
-
-/* ===============================
-   10. MAIN CONTROLLER
+   9. MAIN CONTROLLER
    =============================== */
 
 function runSimulation() {
@@ -290,22 +298,11 @@ function runSimulation() {
 
   if (mode.value === MODES.DEMO) {
     renderPunnettTable(p1, p2);
-    return;
   }
-
-  const result = runExperiment(p1, p2, {
-    runs: +experimentCount.value,
-    mutation: +mutationRate.value,
-    crossover: +crossRate.value
-  });
-
-  renderPhenotypeStats(result.stats);
-  renderPhenotypeVisual(result.lastPhenotype);
-  renderExplanation(result.lastPhenotype);
 }
 
 /* ===============================
-   11. EVENTS
+   10. EVENTS
    =============================== */
 
 organism.onchange = initParents;
@@ -313,3 +310,6 @@ crossType.onchange = initParents;
 runCross.onclick = runSimulation;
 
 initParents();
+
+
+
