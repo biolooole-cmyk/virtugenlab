@@ -2,26 +2,31 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <title>🧬 Віртуальна генетична лабораторія</title>
+  <title>Віртуальна генетична лабораторія</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Стилі -->
+  <!-- Основні стилі -->
   <link rel="stylesheet" href="style.css">
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <div class="app">
 
+  <!-- ================= HEADER ================= -->
   <header>
     <h1>🧬 Віртуальна генетична лабораторія</h1>
-    <p class="subtitle">Поглиблена модель спадковості (9 клас)</p>
+    <p class="subtitle">
+      Поглиблена модель спадковості (9 клас)
+    </p>
   </header>
 
-  <section class="panel">
+  <!-- ================= CONTROL PANEL ================= -->
+  <section class="panel" aria-label="Панель керування лабораторією">
+
+    <!-- === BASIC SETTINGS === -->
     <div class="card">
       <h3>Основні налаштування</h3>
+
       <label for="organism">Організм</label>
       <select id="organism">
         <option value="human" selected>Людина</option>
@@ -34,22 +39,43 @@
         <option value="1">Моногібридне</option>
         <option value="2">Дигібридне</option>
         <option value="3">Тригібридне</option>
+        <option value="4" disabled>Полігенне (буде додано)</option>
       </select>
     </div>
 
+    <!-- === GENETIC PARAMETERS === -->
     <div class="card">
       <h3>Генетичні параметри</h3>
-      <label for="mutationRate">Ймовірність мутацій</label>
-      <input type="range" id="mutationRate" min="0" max="10" step="1" value="0">
-      <span id="mutationValue">0%</span>
 
-      <label for="crossRate">Crossing-over</label>
-      <input type="range" id="crossRate" min="0" max="50" step="5" value="0">
-      <span id="crossValue">0%</span>
+      <label for="mutationRate">Ймовірність мутацій</label>
+      <input
+        type="range"
+        id="mutationRate"
+        min="0"
+        max="10"
+        step="1"
+        value="0">
+      <div class="range-value">
+        <span id="mutationValue">0%</span>
+      </div>
+
+      <label for="crossRate">Кросинговер</label>
+      <input
+        type="range"
+        id="crossRate"
+        min="0"
+        max="50"
+        step="5"
+        value="0">
+      <div class="range-value">
+        <span id="crossValue">0%</span>
+      </div>
     </div>
 
+    <!-- === MODE === -->
     <div class="card">
       <h3>Режим роботи</h3>
+
       <label for="mode">Режим</label>
       <select id="mode">
         <option value="demo">Демонстрація (таблиця Пеннета)</option>
@@ -57,53 +83,106 @@
       </select>
 
       <label for="experimentCount">Кількість схрещувань</label>
-      <input type="number" id="experimentCount" min="10" step="10" value="100">
+      <input
+        type="number"
+        id="experimentCount"
+        min="10"
+        step="10"
+        value="100">
     </div>
+
   </section>
 
-  <section class="parents">
+  <!-- ================= PARENTS ================= -->
+  <section class="parents" aria-label="Батьківські організми">
+
     <div class="card">
       <h3>Батько / Мати 1</h3>
-      <div id="parent1"></div>
+      <div id="parent1" class="genotype-inputs">
+        <!-- генотипи генеруються з app.js -->
+      </div>
     </div>
+
     <div class="card">
       <h3>Батько / Мати 2</h3>
-      <div id="parent2"></div>
+      <div id="parent2" class="genotype-inputs">
+        <!-- генотипи генеруються з app.js -->
+      </div>
     </div>
+
   </section>
 
+  <!-- ================= ACTION ================= -->
   <section class="actions">
-    <button id="runCross" class="run-btn">▶ Запустити схрещування</button>
+    <button id="runCross" class="run-btn">
+      ▶ Запустити схрещування
+    </button>
   </section>
 
-  <section class="results">
+  <!-- ================= RESULTS ================= -->
+  <section class="results" aria-live="polite">
+
+    <!-- === PUNNETT TABLE / DEMO === -->
     <div class="card wide">
-      <h3>Таблиця Пеннета / Результати експерименту</h3>
-      <div id="punnett"></div>
+      <h3>Таблиця Пеннета / Результати</h3>
+
+      <div class="punnett-legend">
+        <span class="dominant">Домінантний алель</span>
+        <span class="recessive">Рецесивний алель</span>
+      </div>
+
+      <div id="punnett" class="punnett-container">
+        <!-- таблиця генерується з app.js -->
+      </div>
     </div>
 
+    <!-- === PHENOTYPES + CHART === -->
     <div class="card">
       <h3>Фенотипи потомства</h3>
-      <ul id="phenotypeList"></ul>
-      <canvas id="chart" width="300" height="300"></canvas>
+
+      <ul id="phenotypeList" class="phenotype-list">
+        <!-- список фенотипів -->
+      </ul>
+
+      <canvas
+        id="chart"
+        width="300"
+        height="300"
+        aria-label="Діаграма часток фенотипів">
+      </canvas>
+    </div>
+
+  </section>
+
+  <!-- ================= PHENOTYPE VISUAL ================= -->
+  <section class="card phenotype-visual" aria-label="Візуалізація фенотипу">
+    <h3>Візуалізація фенотипу потомства</h3>
+    <div id="phenotypeVisual">
+      <!-- emoji / символи фенотипів -->
     </div>
   </section>
 
-  <section class="card phenotype-visual">
-    <h3>Візуалізація фенотипу</h3>
-    <div id="phenotypeVisual"></div>
-  </section>
-
-  <section class="card explanation">
+  <!-- ================= EXPLANATION ================= -->
+  <section class="card explanation" aria-label="Пояснення результатів">
     <h3>Пояснення результатів</h3>
-    <p id="explanationText"></p>
+    <p id="explanationText">
+      <!-- пояснення з app.js -->
+    </p>
   </section>
 
+  <!-- ================= FOOTER ================= -->
   <footer>
-    <p>Навчальна модель. Реальна генетика спрощена для освітніх цілей.</p>
+    <p>
+      Навчальна модель. Реальна генетика спрощена для освітніх цілей.
+      Кросинговер змодельований умовно для демонстрації принципу.
+    </p>
   </footer>
+
 </div>
 
+<!-- ================= SCRIPT ================= -->
 <script src="app.js"></script>
+
 </body>
 </html>
+
