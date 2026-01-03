@@ -16,7 +16,7 @@
   <header>
     <h1>🧬 Віртуальна генетична лабораторія</h1>
     <p class="subtitle">
-      Поглиблена модель спадковості (9 клас)
+      Поглиблена модель спадковості (9 клас, демонстраційний STEM-проєкт)
     </p>
   </header>
 
@@ -116,8 +116,12 @@
   </section>
 
   <!-- ================= ACTION ================= -->
-  <section class="actions">
-    <button id="runCross" class="run-btn" aria-label="Запустити схрещування">
+  <section class="actions" aria-label="Запуск симуляції">
+    <button
+      id="runCross"
+      class="run-btn"
+      type="button"
+      aria-label="Запустити схрещування">
       ▶ Запустити схрещування
     </button>
   </section>
@@ -129,19 +133,26 @@
     <div class="card wide">
       <h3>Таблиця Пеннета / Результати</h3>
 
-      <!-- Легенда алелей -->
-      <div class="punnett-legend">
-        <span class="dominant">Домінантний алель (A)</span>
-        <span class="recessive">Рецесивний алель (a)</span>
+      <!-- Легенда домінантності -->
+      <div class="punnett-legend" aria-label="Легенда домінування">
+        <span class="allele-dominant">Домінантний алель (A)</span>
+        <span class="allele-recessive">Рецесивний алель (a)</span>
       </div>
 
       <!-- Пояснення алелей -->
-      <div id="alleleLegend" class="allele-legend" aria-label="Пояснення алелей">
+      <div
+        id="alleleLegend"
+        class="allele-legend"
+        aria-label="Пояснення алелей">
         <!-- генерується з app.js -->
       </div>
 
-      <div id="punnett" class="punnett-container">
-        <!-- таблиця генерується з app.js -->
+      <!-- Таблиця Пеннета -->
+      <div
+        id="punnett"
+        class="punnett-container"
+        aria-label="Таблиця Пеннета">
+        <!-- генерується з app.js -->
       </div>
     </div>
 
@@ -149,14 +160,21 @@
     <div class="card">
       <h3>Фенотипи потомства</h3>
 
-      <ul id="phenotypeList" class="phenotype-list">
-        <!-- список фенотипів -->
+      <ul
+        id="phenotypeList"
+        class="phenotype-list"
+        aria-label="Список фенотипів">
+        <!-- генерується з app.js -->
       </ul>
 
-      <div id="phenotypeStats" class="phenotype-stats" aria-label="Статистика фенотипів">
+      <div
+        id="phenotypeStats"
+        class="phenotype-stats"
+        aria-label="Статистика фенотипів">
         <!-- % та співвідношення -->
       </div>
 
+      <!-- Поле під майбутній графік -->
       <canvas
         id="chart"
         width="300"
@@ -168,7 +186,9 @@
   </section>
 
   <!-- ================= PHENOTYPE VISUAL ================= -->
-  <section class="card phenotype-visual" aria-label="Візуалізація фенотипу">
+  <section
+    class="card phenotype-visual"
+    aria-label="Візуалізація фенотипу потомства">
     <h3>Візуалізація фенотипу потомства</h3>
     <div id="phenotypeVisual">
       <!-- emoji / символи фенотипів -->
@@ -179,7 +199,7 @@
   <section class="card explanation" aria-label="Пояснення результатів">
     <h3>Пояснення результатів</h3>
     <p id="explanationText">
-      <!-- пояснення з app.js -->
+      <!-- генерується з app.js -->
     </p>
   </section>
 
@@ -187,7 +207,7 @@
   <footer>
     <p>
       Навчальна модель. Реальна генетика спрощена для освітніх цілей.
-      Кросинговер змодельований умовно для демонстрації принципу.
+      Кросинговер і мутації змодельовані умовно для демонстрації принципів спадковості.
     </p>
   </footer>
 
