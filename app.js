@@ -168,7 +168,7 @@ function analyzePhenotypesFromPunnett(cells) {
 }
 
 /* ===============================
-   7. RENDER HELPERS
+   7. VISUAL RENDERS
    =============================== */
 
 function renderAlleleLegend() {
@@ -194,9 +194,7 @@ function renderPhenotypeVisualFromAnalysis(analysis) {
 
   analysis.forEach(item => {
     const symbols = [];
-    const orgTraits = organisms[organism.value].traits;
-
-    Object.values(orgTraits).forEach(tr => {
+    Object.values(organisms[organism.value].traits).forEach(tr => {
       if (item.text.includes(tr.dominant.text)) symbols.push(tr.dominant.symbol);
       if (item.text.includes(tr.recessive.text)) symbols.push(tr.recessive.symbol);
     });
@@ -237,7 +235,39 @@ function renderExplanationFromAnalysis(analysis) {
 }
 
 /* ===============================
-   8. PUNNETT TABLE (DEMO)
+   7.1 PHENOTYPE CHART (CANVAS)
+   =============================== */
+
+function renderPhenotypeChart(analysis) {
+  const canvas = document.getElementById("chart");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const padding = 40;
+  const barWidth = (w - padding * 2) / analysis.length;
+
+  analysis.forEach((a, i) => {
+    const barHeight = (a.percent / 100) * (h - padding * 2);
+    const x = padding + i * barWidth + barWidth / 2;
+    const y = h - padding - barHeight;
+
+    ctx.fillStyle = "#58a6ff";
+    ctx.fillRect(x - barWidth / 4, y, barWidth / 2, barHeight);
+
+    ctx.fillStyle = "#e6edf3";
+    ctx.font = "12px Segoe UI";
+    ctx.textAlign = "center";
+    ctx.fillText(`${a.percent}%`, x, y - 6);
+  });
+}
+
+/* ===============================
+   8. PUNNETT TABLE
    =============================== */
 
 function renderPunnettTable(p1, p2) {
@@ -285,11 +315,12 @@ function renderPunnettTable(p1, p2) {
   const analysis = analyzePhenotypesFromPunnett(phenotypeCells);
   renderPhenotypeVisualFromAnalysis(analysis);
   renderPhenotypeStats(analysis);
+  renderPhenotypeChart(analysis);
   renderExplanationFromAnalysis(analysis);
 }
 
 /* ===============================
-   9. MAIN CONTROLLER
+   9. MAIN
    =============================== */
 
 function runSimulation() {
@@ -310,6 +341,3 @@ crossType.onchange = initParents;
 runCross.onclick = runSimulation;
 
 initParents();
-
-
-
