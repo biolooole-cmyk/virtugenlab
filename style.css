@@ -173,22 +173,6 @@ input[type="range"] {
   margin: 2px;
 }
 
-.eye-brown { background: #6f4e37; }
-.eye-green { background: #3fb950; }
-.eye-blue { background: #58a6ff; }
-
-.hair-dark { background: #2f2f2f; }
-.hair-light { background: #d2b48c; }
-
-.fur-dark { background: #444; }
-.fur-light { background: #d2b48c; }
-
-.freckles-yes { background: #a3714b; }
-.freckles-no { background: transparent; border: 1px dashed #555; }
-
-.petal-red { background: #d73a49; }
-.petal-white { background: #f0f6fc; }
-
 /* ===============================
    10. PUNNETT TABLE
    =============================== */
@@ -214,11 +198,10 @@ input[type="range"] {
 
 .punnett-table td {
   background: #0d1117;
-  transition: background var(--transition);
 }
 
 /* ===============================
-   10.1 DOMINANT / RECESSIVE HIGHLIGHT
+   10.1 DOMINANT / RECESSIVE
    =============================== */
 
 .allele-dominant {
@@ -236,80 +219,34 @@ input[type="range"] {
   border-radius: 4px;
 }
 
-/* hover-підказка */
-.punnett-table td:hover {
-  background: rgba(88,166,255,0.08);
-}
-
 /* ===============================
-   10.2 LEGEND
-   =============================== */
-
-.punnett-legend {
-  display: flex;
-  gap: 16px;
-  font-size: 0.75rem;
-  margin-bottom: 10px;
-}
-
-.punnett-legend .dominant {
-  color: var(--dominant-text);
-}
-
-.punnett-legend .recessive {
-  color: var(--recessive-text);
-}
-
-/* ===============================
-   11. PHENOTYPE VISUALIZATION
+   11. PHENOTYPE VISUALIZATION (КЛЮЧОВЕ)
    =============================== */
 
 #phenotypeVisual {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
 }
 
-/* HUMAN */
-.human-visual {
-  width: 120px;
-  height: 160px;
-  background: #2d333b;
-  border-radius: 60px 60px 40px 40px;
-  position: relative;
+.phenotype-trait {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  padding: 14px 10px;
+  text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
 }
 
-.human-hair {
-  height: 40px;
-  border-radius: 60px 60px 20px 20px;
+.phenotype-symbol {
+  font-size: 2rem;
+  margin-bottom: 6px;
 }
 
-.human-eyes {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-}
-
-/* CAT */
-.cat-visual {
-  width: 140px;
-  height: 90px;
-  background: #2d333b;
-  border-radius: 60px;
-  position: relative;
-}
-
-/* ROSE */
-.rose-flower {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-}
-
-.rose-bush {
-  width: 10px;
-  height: 40px;
-  background: #238636;
-  margin: auto;
+.phenotype-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 /* ===============================
