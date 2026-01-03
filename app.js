@@ -5,37 +5,74 @@
    EXPERIMENT: random simulation (mutation + crossover)
    ===================================================== */
 
-const MODES = { DEMO: "demo", EXPERIMENT: "experiment" };
+/* ===============================
+   1. GLOBAL CONFIG
+   =============================== */
+
+const MODES = {
+  DEMO: "demo",
+  EXPERIMENT: "experiment"
+};
 
 /* ===============================
    2. ORGANISM MODELS
    =============================== */
+
 const organisms = {
   human: {
     name: "Людина",
     genes: ["A", "B", "C"],
     traits: {
-      A: { dominant: { text: "Карі очі" }, recessive: { text: "Блакитні очі" } },
-      B: { dominant: { text: "Темне волосся" }, recessive: { text: "Світле волосся" } },
-      C: { dominant: { text: "Є веснянки" }, recessive: { text: "Немає веснянок" } }
+      A: {
+        dominant: { text: "Карі очі", icon: "eye-brown", symbol: "👁️🟤" },
+        recessive: { text: "Блакитні очі", icon: "eye-blue", symbol: "👁️🔵" }
+      },
+      B: {
+        dominant: { text: "Темне волосся", icon: "hair-dark", symbol: "🧑🏽‍🦱" },
+        recessive: { text: "Світле волосся", icon: "hair-light", symbol: "🧑🏼‍🦱" }
+      },
+      C: {
+        dominant: { text: "Є веснянки", icon: "freckles-yes", symbol: "✨" },
+        recessive: { text: "Немає веснянок", icon: "freckles-no", symbol: "🚫✨" }
+      }
     }
   },
+
   cat: {
     name: "Кіт",
     genes: ["A", "B", "C"],
     traits: {
-      A: { dominant: { text: "Темна шерсть" }, recessive: { text: "Світла шерсть" } },
-      B: { dominant: { text: "Зелені очі" }, recessive: { text: "Блакитні очі" } },
-      C: { dominant: { text: "Коротка шерсть" }, recessive: { text: "Довга шерсть" } }
+      A: {
+        dominant: { text: "Темна шерсть", icon: "fur-dark", symbol: "🐈‍⬛" },
+        recessive: { text: "Світла шерсть", icon: "fur-light", symbol: "🐈" }
+      },
+      B: {
+        dominant: { text: "Зелені очі", icon: "eye-green", symbol: "👁️🟢" },
+        recessive: { text: "Блакитні очі", icon: "eye-blue", symbol: "👁️🔵" }
+      },
+      C: {
+        dominant: { text: "Коротка шерсть", icon: "fur-short", symbol: "✂️" },
+        recessive: { text: "Довга шерсть", icon: "fur-long", symbol: "🧶" }
+      }
     }
   },
+
   rose: {
     name: "Роза",
     genes: ["A", "B", "C"],
     traits: {
-      A: { dominant: { text: "Червоні пелюстки" }, recessive: { text: "Білі пелюстки" } },
-      B: { dominant: { text: "Махрова квітка" }, recessive: { text: "Проста квітка" } },
-      C: { dominant: { text: "Високий кущ" }, recessive: { text: "Низький кущ" } }
+      A: {
+        dominant: { text: "Червоні пелюстки", icon: "petal-red", symbol: "🌹" },
+        recessive: { text: "Білі пелюстки", icon: "petal-white", symbol: "🤍🌹" }
+      },
+      B: {
+        dominant: { text: "Махрова квітка", icon: "flower-double", symbol: "🌸" },
+        recessive: { text: "Проста квітка", icon: "flower-simple", symbol: "🌼" }
+      },
+      C: {
+        dominant: { text: "Високий кущ", icon: "bush-tall", symbol: "⬆️🌿" },
+        recessive: { text: "Низький кущ", icon: "bush-low", symbol: "⬇️🌿" }
+      }
     }
   }
 };
@@ -43,149 +80,236 @@ const organisms = {
 /* ===============================
    3. UI HELPERS
    =============================== */
+
 function getActiveGenes() {
   const count = Number(crossType.value);
-  const orgKey = organism.value;
-  return organisms[orgKey].genes.slice(0, count);
+  return organisms[organism.value].genes.slice(0, count);
 }
+
 function createParentUI(containerId) {
   const genes = getActiveGenes();
   const el = document.getElementById(containerId);
   el.innerHTML = "";
+
   genes.forEach(gene => {
     const select = document.createElement("select");
-    [gene+gene, gene+gene.toLowerCase(), gene.toLowerCase()+gene.toLowerCase()].forEach(value => {
+    const D = gene;
+    const r = gene.toLowerCase();
+
+    [D + D, D + r, r + r].forEach(v => {
       const opt = document.createElement("option");
-      opt.value = value;
-      opt.textContent = value;
+      opt.value = v;
+      opt.textContent = v;
       select.appendChild(opt);
     });
+
     el.appendChild(select);
   });
 }
-function initParents() { createParentUI("parent1"); createParentUI("parent2"); }
+
+function initParents() {
+  createParentUI("parent1");
+  createParentUI("parent2");
+}
 
 /* ===============================
    4. GAMETES
    =============================== */
+
 function generateGametesDeterministic(genotypes) {
   let gametes = [""];
   genotypes.forEach(pair => {
-    const alleles = pair[0]===pair[1] ? [pair[0]] : [pair[0],pair[1]];
-    gametes = gametes.flatMap(g => alleles.map(a => g+a));
+    const alleles = pair[0] === pair[1] ? [pair[0]] : [pair[0], pair[1]];
+    gametes = gametes.flatMap(g => alleles.map(a => g + a));
   });
   return gametes;
 }
+
 function mutateAllele(a, rate) {
-  if (Math.random()*100<rate) return a===a.toUpperCase()?a.toLowerCase():a.toUpperCase();
+  if (Math.random() * 100 < rate) {
+    return a === a.toUpperCase() ? a.toLowerCase() : a.toUpperCase();
+  }
   return a;
 }
+
 function generateGameteRandom(genotypes, mutation, crossover) {
-  let gamete="";
-  for (let i=0;i<genotypes.length;i++) {
-    let allele = Math.random()<0.5?genotypes[i][0]:genotypes[i][1];
-    if (i>0 && Math.random()*100<crossover) allele=gamete[i-1];
-    gamete+=mutateAllele(allele,mutation);
+  let g = "";
+  for (let i = 0; i < genotypes.length; i++) {
+    let allele = Math.random() < 0.5 ? genotypes[i][0] : genotypes[i][1];
+    if (i > 0 && Math.random() * 100 < crossover) allele = g[i - 1];
+    g += mutateAllele(allele, mutation);
   }
-  return gamete;
+  return g;
 }
 
 /* ===============================
    5. PHENOTYPE
    =============================== */
+
 function getPhenotype(genotype, orgKey) {
-  const traits=organisms[orgKey].traits;
-  const text=[]; 
-  Object.entries(genotype).forEach(([gene,pair])=>{
-    const dominant=pair.includes(gene);
-    const ph=dominant?traits[gene].dominant:traits[gene].recessive;
-    text.push(ph.text);
+  const traits = organisms[orgKey].traits;
+  const phenotype = { traits: [], textParts: [] };
+
+  Object.entries(genotype).forEach(([gene, pair]) => {
+    const dominant = pair.includes(gene);
+    const data = dominant ? traits[gene].dominant : traits[gene].recessive;
+
+    phenotype.traits.push(data);
+    phenotype.textParts.push(data.text);
   });
-  return { text:text.join(", ") };
+
+  phenotype.text = phenotype.textParts.join(", ");
+  return phenotype;
 }
 
 /* ===============================
-   6. PUNNETT TABLE
+   6. VISUALIZATION
    =============================== */
-function formatGenotypeWithHighlight(pair,gene){
-  return pair.split("").map(a=>a===gene?`<span class="allele-dominant">${a}</span>`:`<span class="allele-recessive">${a}</span>`).join("");
+
+function renderPhenotypeVisual(phenotype) {
+  const container = document.getElementById("phenotypeVisual");
+  container.innerHTML = "";
+
+  phenotype.traits.forEach(t => {
+    const block = document.createElement("div");
+    block.className = "phenotype-trait";
+    block.innerHTML = `
+      <div class="phenotype-symbol">${t.symbol}</div>
+      <div class="phenotype-text">${t.text}</div>
+    `;
+    container.appendChild(block);
+  });
 }
-function renderPunnettTable(p1,p2){
-  const container=document.getElementById("punnett");
-  container.innerHTML="";
-  const g1=generateGametesDeterministic(p1);
-  const g2=generateGametesDeterministic(p2);
-  const orgKey=organism.value;
-  const table=document.createElement("table");
-  table.className="punnett-table";
-  const header=document.createElement("tr");
-  header.innerHTML="<th>Гамети ♂ / ♀</th>"+g2.map(g=>`<th>${g}</th>`).join("");
-  table.appendChild(header);
-  g1.forEach(row=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<th>${row}</th>`;
-    g2.forEach(col=>{
-      const genotype={};
-      const genotypeHTML=[];
-      for(let i=0;i<row.length;i++){
-        const gene=row[i].toUpperCase();
-        const pair=[row[i],col[i]].sort().join("");
-        genotype[gene]=pair;
-        genotypeHTML.push(formatGenotypeWithHighlight(pair,gene));
+
+function renderExplanation(phenotype) {
+  document.getElementById("explanationText").textContent =
+    `Отриманий фенотип потомства:\n${phenotype.text}.\n` +
+    `Прояв ознак визначається домінантними та рецесивними алелями батьків.`;
+}
+
+/* ===============================
+   7. PUNNETT TABLE (DEMO)
+   =============================== */
+
+function renderPunnettTable(p1, p2) {
+  const container = document.getElementById("punnett");
+  container.innerHTML = "";
+
+  const g1 = generateGametesDeterministic(p1);
+  const g2 = generateGametesDeterministic(p2);
+
+  const table = document.createElement("table");
+  table.className = "punnett-table";
+
+  table.innerHTML =
+    "<tr><th>♂ / ♀</th>" + g2.map(g => `<th>${g}</th>`).join("") + "</tr>";
+
+  let examplePhenotype = null;
+
+  g1.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<th>${r}</th>`;
+
+    g2.forEach(c => {
+      const genotype = {};
+      for (let i = 0; i < r.length; i++) {
+        const gene = r[i].toUpperCase();
+        genotype[gene] = [r[i], c[i]].sort().join("");
       }
-      const ph=getPhenotype(genotype,orgKey);
-      tr.innerHTML+=`<td><strong>${genotypeHTML.join(" ")}</strong><div>${ph.text}</div></td>`;
+
+      const ph = getPhenotype(genotype, organism.value);
+      if (!examplePhenotype) examplePhenotype = ph;
+
+      tr.innerHTML += `
+        <td>
+          <strong>${Object.values(genotype).join(" ")}</strong>
+          <div>${ph.text}</div>
+          <div>${ph.traits.map(t => t.symbol).join(" ")}</div>
+        </td>`;
     });
+
     table.appendChild(tr);
   });
+
   container.appendChild(table);
-}
 
-/* ===============================
-   7. EXPERIMENT
-   =============================== */
-function runExperiment(p1,p2,cfg){
-  const stats={}; const orgKey=organism.value;
-  for(let i=0;i<cfg.runs;i++){
-    const g1=generateGameteRandom(p1,cfg.mutation,cfg.crossover);
-    const g2=generateGameteRandom(p2,cfg.mutation,cfg.crossover);
-    const genotype={};
-    for(let j=0;j<g1.length;j++){
-      const gene=g1[j].toUpperCase();
-      genotype[gene]=[g1[j],g2[j]].sort().join("");
-    }
-    const ph=getPhenotype(genotype,orgKey);
-    stats[ph.text]=(stats[ph.text]||0)+1;
+  if (examplePhenotype) {
+    renderPhenotypeVisual(examplePhenotype);
+    renderExplanation(examplePhenotype);
   }
-  return stats;
 }
 
 /* ===============================
-   8. PHENOTYPE STATS + CHART
+   8. STATISTICS
    =============================== */
-function renderPhenotypeStats(stats){
-  const list=document.getElementById("phenotypeList");
-  const chartCanvas=document.getElementById("chart");
-  list.innerHTML="";
-  const total=Object.values(stats).reduce((a,b)=>a+b,0);
-  Object.entries(stats).forEach(([phenotype,count])=>{
-    const li=document.createElement("li");
-    const percent=((count/total)*100).toFixed(1);
-    li.innerHTML=`<strong>${phenotype}</strong> — ${count} (${percent}%)`;
+
+function renderPhenotypeStats(stats) {
+  const list = document.getElementById("phenotypeList");
+  list.innerHTML = "";
+
+  Object.entries(stats).forEach(([k, v]) => {
+    const li = document.createElement("li");
+    li.textContent = `${k} — ${v}`;
     list.appendChild(li);
   });
-  if(window.myChart) window.myChart.destroy();
-  window.myChart=new Chart(chartCanvas,{type:"pie",data:{labels:Object.keys(stats),datasets:[{data:Object.values(stats),backgroundColor:["#58a6ff","#3fb950","#d29922","#d73a49","#8b949e"]}]},options:{plugins:{legend:{labels:{color:"#e6edf3"}}}}});
-  renderExplanation(stats,total);
-  const examplePh=Object.keys(stats)[0];
-  renderPhenotypeVisual({text:examplePh},organism.value);
 }
 
 /* ===============================
-   9. PHENOTYPE VISUAL (EMOJI)
+   9. EXPERIMENT
    =============================== */
-function renderPhenotypeVisual(phenotype,orgKey){
-  const visual=document.getElementById("phenotypeVisual");
-  visual.innerHTML="";
-  const emojiMap={
-    human:{"Карі очі":"
+
+function runExperiment(p1, p2, cfg) {
+  const stats = {};
+  let lastPhenotype = null;
+
+  for (let i = 0; i < cfg.runs; i++) {
+    const g1 = generateGameteRandom(p1, cfg.mutation, cfg.crossover);
+    const g2 = generateGameteRandom(p2, cfg.mutation, cfg.crossover);
+
+    const genotype = {};
+    for (let j = 0; j < g1.length; j++) {
+      const gene = g1[j].toUpperCase();
+      genotype[gene] = [g1[j], g2[j]].sort().join("");
+    }
+
+    const ph = getPhenotype(genotype, organism.value);
+    lastPhenotype = ph;
+    stats[ph.text] = (stats[ph.text] || 0) + 1;
+  }
+
+  return { stats, lastPhenotype };
+}
+
+/* ===============================
+   10. MAIN CONTROLLER
+   =============================== */
+
+function runSimulation() {
+  const p1 = [...parent1.querySelectorAll("select")].map(s => s.value);
+  const p2 = [...parent2.querySelectorAll("select")].map(s => s.value);
+
+  if (mode.value === MODES.DEMO) {
+    renderPunnettTable(p1, p2);
+    return;
+  }
+
+  const result = runExperiment(p1, p2, {
+    runs: +experimentCount.value,
+    mutation: +mutationRate.value,
+    crossover: +crossRate.value
+  });
+
+  renderPhenotypeStats(result.stats);
+  renderPhenotypeVisual(result.lastPhenotype);
+  renderExplanation(result.lastPhenotype);
+}
+
+/* ===============================
+   11. EVENTS
+   =============================== */
+
+organism.onchange = initParents;
+crossType.onchange = initParents;
+runCross.onclick = runSimulation;
+
+initParents();
