@@ -159,6 +159,12 @@ input[type="range"] {
   border-radius: 999px;
   padding: 12px 28px;
   cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.run-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(88,166,255,0.35);
 }
 
 /* ===============================
@@ -220,7 +226,30 @@ input[type="range"] {
 }
 
 /* ===============================
-   11. PHENOTYPE VISUALIZATION (КЛЮЧОВЕ)
+   10.2 ALLELE LEGEND
+   =============================== */
+
+.allele-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.allele-item {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  padding: 10px;
+  font-size: 0.8rem;
+}
+
+.allele-item strong {
+  color: var(--accent);
+}
+
+/* ===============================
+   11. PHENOTYPE VISUALIZATION
    =============================== */
 
 #phenotypeVisual {
@@ -236,7 +265,11 @@ input[type="range"] {
   border-radius: var(--radius-small);
   padding: 14px 10px;
   text-align: center;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+  transition: transform var(--transition);
+}
+
+.phenotype-trait:hover {
+  transform: translateY(-2px);
 }
 
 .phenotype-symbol {
@@ -247,6 +280,29 @@ input[type="range"] {
 .phenotype-text {
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+/* ===============================
+   11.1 PHENOTYPE STATS
+   =============================== */
+
+.phenotype-stats {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.phenotype-stat {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  padding: 8px;
+  font-size: 0.8rem;
+}
+
+.phenotype-stat span {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 /* ===============================
