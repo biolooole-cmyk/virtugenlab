@@ -91,16 +91,13 @@ function createParentUI(containerId) {
 
   getActiveGenes().forEach(gene => {
     const select = document.createElement("select");
-    [
-      gene + gene,
-      gene + gene.toLowerCase(),
-      gene.toLowerCase() + gene.toLowerCase()
-    ].forEach(v => {
-      const opt = document.createElement("option");
-      opt.value = v;
-      opt.textContent = v;
-      select.appendChild(opt);
-    });
+    [gene + gene, gene + gene.toLowerCase(), gene.toLowerCase() + gene.toLowerCase()]
+      .forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v;
+        select.appendChild(opt);
+      });
     el.appendChild(select);
   });
 }
@@ -112,63 +109,51 @@ function initParents() {
 }
 
 /* ===============================
-   4. PURE MENDELIAN GAMETES (DEMO)
+   4. MENDELIAN GAMETES (DEMO)
    =============================== */
 
 function generateGametesDeterministic(genotypes) {
   let gametes = [""];
-
   genotypes.forEach(pair => {
-    const alleles =
-      pair[0] === pair[1] ? [pair[0]] : [pair[0], pair[1]];
+    const alleles = pair[0] === pair[1] ? [pair[0]] : [pair[0], pair[1]];
     gametes = gametes.flatMap(g => alleles.map(a => g + a));
   });
-
   return gametes;
 }
 
 /* ===============================
-   5. MEIOSIS MECHANICS (EXPERIMENT)
+   5. MEIOSIS (EXPERIMENT)
    =============================== */
 
-// --- Mutation ---
-function mutateAllele(allele) {
+function mutateAllele(a) {
   const rate = Number(mutationRate.value) / 100;
   if (Math.random() < rate) {
-    return allele === allele.toUpperCase()
-      ? allele.toLowerCase()
-      : allele.toUpperCase();
+    return a === a.toUpperCase() ? a.toLowerCase() : a.toUpperCase();
   }
-  return allele;
+  return a;
 }
 
-// --- Proper crossover ---
-function performCrossover(chrom1, chrom2) {
+function performCrossover(c1, c2) {
   const rate = Number(crossRate.value) / 100;
-  if (Math.random() >= rate) return [chrom1, chrom2];
+  if (Math.random() >= rate) return [c1, c2];
 
-  const point = Math.floor(Math.random() * (chrom1.length - 1)) + 1;
-
-  const new1 = [...chrom1.slice(0, point), ...chrom2.slice(point)];
-  const new2 = [...chrom2.slice(0, point), ...chrom1.slice(point)];
-
-  return [new1, new2];
+  const point = Math.floor(Math.random() * (c1.length - 1)) + 1;
+  return [
+    [...c1.slice(0, point), ...c2.slice(point)],
+    [...c2.slice(0, point), ...c1.slice(point)]
+  ];
 }
 
-// --- Gamete formation ---
 function formGamete(genotypes) {
-  let chrom1 = [];
-  let chrom2 = [];
-
-  genotypes.forEach(pair => {
-    chrom1.push(pair[0]);
-    chrom2.push(pair[1]);
+  let c1 = [], c2 = [];
+  genotypes.forEach(p => {
+    c1.push(p[0]);
+    c2.push(p[1]);
   });
 
-  [chrom1, chrom2] = performCrossover(chrom1, chrom2);
-
-  const selected = Math.random() < 0.5 ? chrom1 : chrom2;
-  return selected.map(a => mutateAllele(a)).join("");
+  [c1, c2] = performCrossover(c1, c2);
+  const chosen = Math.random() < 0.5 ? c1 : c2;
+  return chosen.map(mutateAllele).join("");
 }
 
 /* ===============================
@@ -176,20 +161,13 @@ function formGamete(genotypes) {
    =============================== */
 
 function getPhenotype(genotype, orgKey) {
-  const phenotype = { traits: [], textParts: [] };
-
+  const ph = { textParts: [] };
   Object.entries(genotype).forEach(([gene, pair]) => {
     const tr = organisms[orgKey].traits[gene];
-    const data = pair.includes(gene)
-      ? tr.dominant
-      : tr.recessive;
-
-    phenotype.traits.push(data);
-    phenotype.textParts.push(data.text);
+    ph.textParts.push(pair.includes(gene) ? tr.dominant.text : tr.recessive.text);
   });
-
-  phenotype.text = phenotype.textParts.join(", ");
-  return phenotype;
+  ph.text = ph.textParts.join(", ");
+  return ph;
 }
 
 /* ===============================
@@ -209,27 +187,70 @@ function analyzePhenotypes(cells) {
 }
 
 /* ===============================
-   8. RENDERS
+   8. RENDER HELPERS
    =============================== */
 
-function renderAlleleLegend() {
-  const el = document.getElementById("alleleLegend");
+function renderPhenotypeVisualFromAnalysis(a) {
+  const el = phenotypeVisual;
   el.innerHTML = "";
-
-  Object.entries(organisms[organism.value].traits).forEach(([g, t]) => {
-    el.innerHTML += `
-      <div class="allele-item">
-        <strong>${g}</strong> — ${t.dominant.text} ${t.dominant.symbol}<br>
-        <strong>${g.toLowerCase()}</strong> — ${t.recessive.text} ${t.recessive.symbol}
-      </div>`;
+  a.forEach(p => {
+    const d = document.createElement("div");
+    d.className = "phenotype-trait";
+    d.innerHTML = `<div class="phenotype-text">${p.text}<br>${p.percent}%</div>`;
+    el.appendChild(d);
   });
 }
 
-function renderAll(analysis) {
-  renderPhenotypeVisualFromAnalysis(analysis);
-  renderPhenotypeList(analysis);
-  renderPhenotypeStats(analysis);
-  renderExplanationFromAnalysis(analysis);
+function renderPhenotypeList(a) {
+  phenotypeList.innerHTML = "";
+  a.forEach(p => {
+    const li = document.createElement("li");
+    li.textContent = `${p.text} — ${p.percent}% (${p.count})`;
+    phenotypeList.appendChild(li);
+  });
+}
+
+function renderPhenotypeStats(a) {
+  phenotypeStats.innerHTML = "";
+  a.forEach(p => {
+    phenotypeStats.innerHTML +=
+      `<div class="phenotype-stat"><span>${p.text}</span> — ${p.percent}%</div>`;
+  });
+}
+
+function renderExplanationFromAnalysis(a) {
+  explanationText.textContent =
+    a.map(p => `• ${p.text} — ${p.percent}%`).join("\n");
+}
+
+function renderAlleleLegend() {
+  alleleLegend.innerHTML = "";
+  Object.entries(organisms[organism.value].traits).forEach(([g, t]) => {
+    alleleLegend.innerHTML +=
+      `<div class="allele-item"><strong>${g}</strong> — ${t.dominant.text}<br>
+       <strong>${g.toLowerCase()}</strong> — ${t.recessive.text}</div>`;
+  });
+}
+
+function renderPunnettTable(g1, g2) {
+  punnett.innerHTML = "";
+  const table = document.createElement("table");
+  table.className = "punnett-table";
+
+  table.innerHTML =
+    `<tr><th></th>${g2.map(g => `<th>${g}</th>`).join("")}</tr>` +
+    g1.map(r =>
+      `<tr><th>${r}</th>${g2.map(c => `<td>${r}${c}</td>`).join("")}</tr>`
+    ).join("");
+
+  punnett.appendChild(table);
+}
+
+function renderAll(a) {
+  renderPhenotypeVisualFromAnalysis(a);
+  renderPhenotypeList(a);
+  renderPhenotypeStats(a);
+  renderExplanationFromAnalysis(a);
 }
 
 /* ===============================
@@ -237,17 +258,17 @@ function renderAll(analysis) {
    =============================== */
 
 function runDemo(p1, p2) {
-  const phenotypes = [];
+  const g1 = generateGametesDeterministic(p1);
+  const g2 = generateGametesDeterministic(p2);
 
-  generateGametesDeterministic(p1).forEach(g1 =>
-    generateGametesDeterministic(p2).forEach(g2 => {
-      const genotype = {};
-      g1.split("").forEach((a, i) => {
-        genotype[a.toUpperCase()] = [a, g2[i]].sort().join("");
-      });
-      phenotypes.push(getPhenotype(genotype, organism.value));
-    })
-  );
+  renderPunnettTable(g1, g2);
+
+  const phenotypes = [];
+  g1.forEach(r => g2.forEach(c => {
+    const gt = {};
+    r.split("").forEach((a, i) => gt[a.toUpperCase()] = [a, c[i]].sort().join(""));
+    phenotypes.push(getPhenotype(gt, organism.value));
+  }));
 
   renderAll(analyzePhenotypes(phenotypes));
 }
@@ -257,6 +278,7 @@ function runDemo(p1, p2) {
    =============================== */
 
 function runExperiment(p1, p2) {
+  punnett.innerHTML = "";
   const runs = Number(experimentCount.value);
   const phenotypes = [];
 
@@ -264,28 +286,22 @@ function runExperiment(p1, p2) {
     const g1 = formGamete(p1);
     const g2 = formGamete(p2);
 
-    const genotype = {};
-    g1.split("").forEach((a, i) => {
-      genotype[a.toUpperCase()] = [a, g2[i]].sort().join("");
-    });
-
-    phenotypes.push(getPhenotype(genotype, organism.value));
+    const gt = {};
+    g1.split("").forEach((a, i) => gt[a.toUpperCase()] = [a, g2[i]].sort().join(""));
+    phenotypes.push(getPhenotype(gt, organism.value));
   }
 
   renderAll(analyzePhenotypes(phenotypes));
 }
 
 /* ===============================
-   11. MAIN CONTROLLER
+   11. CONTROLLER
    =============================== */
 
 function runSimulation() {
   const p1 = [...parent1.querySelectorAll("select")].map(s => s.value);
   const p2 = [...parent2.querySelectorAll("select")].map(s => s.value);
-
-  mode.value === MODES.DEMO
-    ? runDemo(p1, p2)
-    : runExperiment(p1, p2);
+  mode.value === MODES.DEMO ? runDemo(p1, p2) : runExperiment(p1, p2);
 }
 
 /* ===============================
@@ -295,8 +311,6 @@ function runSimulation() {
 organism.onchange = initParents;
 crossType.onchange = initParents;
 runCross.onclick = runSimulation;
-
-/* ---- SLIDER REACTIVITY ---- */
 
 mutationRate.oninput = () => {
   mutationValue.textContent = `${mutationRate.value}%`;
@@ -309,9 +323,9 @@ crossRate.oninput = () => {
 };
 
 mode.onchange = () => {
-  const isDemo = mode.value === MODES.DEMO;
-  mutationRate.disabled = isDemo;
-  crossRate.disabled = isDemo;
+  const demo = mode.value === MODES.DEMO;
+  mutationRate.disabled = demo;
+  crossRate.disabled = demo;
 };
 
 mutationValue.textContent = `${mutationRate.value}%`;
