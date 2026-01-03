@@ -23,19 +23,18 @@
   <!-- ================= CONTROL PANEL ================= -->
   <section class="panel" aria-label="Панель керування лабораторією">
 
-    <!-- === BASIC SETTINGS === -->
     <div class="card">
       <h3>Основні налаштування</h3>
 
       <label for="organism">Організм</label>
-      <select id="organism" aria-label="Вибір організму">
+      <select id="organism">
         <option value="human" selected>Людина</option>
         <option value="cat">Кіт</option>
         <option value="rose">Роза</option>
       </select>
 
       <label for="crossType">Тип схрещування</label>
-      <select id="crossType" aria-label="Тип схрещування">
+      <select id="crossType">
         <option value="1">Моногібридне</option>
         <option value="2">Дигібридне</option>
         <option value="3">Тригібридне</option>
@@ -43,178 +42,106 @@
       </select>
     </div>
 
-    <!-- === GENETIC PARAMETERS === -->
     <div class="card">
       <h3>Генетичні параметри</h3>
 
       <label for="mutationRate">Ймовірність мутацій</label>
-      <input
-        type="range"
-        id="mutationRate"
-        min="0"
-        max="10"
-        step="1"
-        value="0"
-        aria-label="Ймовірність мутацій">
+      <input type="range" id="mutationRate" min="0" max="10" step="1" value="0">
       <div class="range-value">
         <span id="mutationValue">0%</span>
       </div>
 
       <label for="crossRate">Кросинговер</label>
-      <input
-        type="range"
-        id="crossRate"
-        min="0"
-        max="50"
-        step="5"
-        value="0"
-        aria-label="Інтенсивність кросинговеру">
+      <input type="range" id="crossRate" min="0" max="50" step="5" value="0">
       <div class="range-value">
         <span id="crossValue">0%</span>
       </div>
     </div>
 
-    <!-- === MODE === -->
     <div class="card">
       <h3>Режим роботи</h3>
 
       <label for="mode">Режим</label>
-      <select id="mode" aria-label="Режим роботи">
+      <select id="mode">
         <option value="demo">Демонстрація (таблиця Пеннета)</option>
         <option value="experiment">Віртуальний експеримент</option>
       </select>
 
       <label for="experimentCount">Кількість схрещувань</label>
-      <input
-        type="number"
-        id="experimentCount"
-        min="10"
-        step="10"
-        value="100"
-        aria-label="Кількість симуляцій">
+      <input type="number" id="experimentCount" min="10" step="10" value="100">
     </div>
 
   </section>
 
   <!-- ================= PARENTS ================= -->
-  <section class="parents" aria-label="Батьківські організми">
+  <section class="parents">
 
     <div class="card">
       <h3>Батько / Мати 1</h3>
-      <div id="parent1" class="genotype-inputs">
-        <!-- генотипи генеруються з app.js -->
-      </div>
+      <div id="parent1" class="genotype-inputs"></div>
     </div>
 
     <div class="card">
       <h3>Батько / Мати 2</h3>
-      <div id="parent2" class="genotype-inputs">
-        <!-- генотипи генеруються з app.js -->
-      </div>
+      <div id="parent2" class="genotype-inputs"></div>
     </div>
 
   </section>
 
   <!-- ================= ACTION ================= -->
-  <section class="actions" aria-label="Запуск симуляції">
-    <button
-      id="runCross"
-      class="run-btn"
-      type="button"
-      aria-label="Запустити схрещування">
+  <section class="actions">
+    <button id="runCross" class="run-btn" type="button">
       ▶ Запустити схрещування
     </button>
   </section>
 
   <!-- ================= RESULTS ================= -->
-  <section class="results" aria-live="polite">
+  <section class="results">
 
-    <!-- === PUNNETT TABLE / DEMO === -->
     <div class="card wide">
       <h3>Таблиця Пеннета / Результати</h3>
 
-      <!-- Легенда домінантності -->
-      <div class="punnett-legend" aria-label="Легенда домінування">
+      <div class="punnett-legend">
         <span class="allele-dominant">Домінантний алель (A)</span>
         <span class="allele-recessive">Рецесивний алель (a)</span>
       </div>
 
-      <!-- Пояснення алелей -->
-      <div
-        id="alleleLegend"
-        class="allele-legend"
-        aria-label="Пояснення алелей">
-        <!-- генерується з app.js -->
-      </div>
+      <div id="alleleLegend" class="allele-legend"></div>
 
-      <!-- Таблиця Пеннета -->
-      <div
-        id="punnett"
-        class="punnett-container"
-        aria-label="Таблиця Пеннета">
-        <!-- генерується з app.js -->
-      </div>
+      <div id="punnett" class="punnett-container"></div>
     </div>
 
-    <!-- === PHENOTYPES + ANALYSIS === -->
     <div class="card">
       <h3>Фенотипи потомства</h3>
 
-      <ul
-        id="phenotypeList"
-        class="phenotype-list"
-        aria-label="Список фенотипів">
-        <!-- генерується з app.js -->
-      </ul>
+      <ul id="phenotypeList"></ul>
 
-      <div
-        id="phenotypeStats"
-        class="phenotype-stats"
-        aria-label="Статистика фенотипів">
-        <!-- % та співвідношення -->
-      </div>
+      <div id="phenotypeStats" class="phenotype-stats"></div>
 
-      <!-- Поле під майбутній графік -->
-      <canvas
-        id="chart"
-        width="300"
-        height="300"
-        aria-label="Діаграма часток фенотипів">
-      </canvas>
+      <canvas id="chart" width="300" height="300"></canvas>
     </div>
 
   </section>
 
-  <!-- ================= PHENOTYPE VISUAL ================= -->
-  <section
-    class="card phenotype-visual"
-    aria-label="Візуалізація фенотипу потомства">
+  <section class="card">
     <h3>Візуалізація фенотипу потомства</h3>
-    <div id="phenotypeVisual">
-      <!-- emoji / символи фенотипів -->
-    </div>
+    <div id="phenotypeVisual"></div>
   </section>
 
-  <!-- ================= EXPLANATION ================= -->
-  <section class="card explanation" aria-label="Пояснення результатів">
+  <section class="card explanation">
     <h3>Пояснення результатів</h3>
-    <p id="explanationText">
-      <!-- генерується з app.js -->
-    </p>
+    <p id="explanationText"></p>
   </section>
 
-  <!-- ================= FOOTER ================= -->
   <footer>
     <p>
       Навчальна модель. Реальна генетика спрощена для освітніх цілей.
-      Кросинговер і мутації змодельовані умовно для демонстрації принципів спадковості.
+      Кросинговер і мутації змодельовані умовно.
     </p>
   </footer>
 
 </div>
 
-<!-- ================= SCRIPT ================= -->
 <script src="app.js"></script>
-
 </body>
 </html>
