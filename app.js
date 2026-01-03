@@ -186,39 +186,61 @@ function formGamete(genotypes) {
 }
 
 /* ===============================
-   6. PHENOTYPE
+   6. PHENOTYPE (TEXT + EMOJI)
    =============================== */
 
 function getPhenotype(genotype, orgKey) {
-  const ph = { textParts: [] };
+  const ph = {
+    textParts: [],
+    symbols: []
+  };
+
   Object.entries(genotype).forEach(([gene, pair]) => {
     const tr = organisms[orgKey].traits[gene];
-    ph.textParts.push(
-      pair.includes(gene) ? tr.dominant.text : tr.recessive.text
-    );
+    const trait = pair.includes(gene)
+      ? tr.dominant
+      : tr.recessive;
+
+    ph.textParts.push(trait.text);
+    ph.symbols.push(trait.symbol);
   });
+
   ph.text = ph.textParts.join(", ");
+  ph.visual = ph.symbols.join(" ");
+
   return ph;
 }
 
 /* ===============================
-   7. ANALYSIS
+   7. ANALYSIS (WITH EMOJI)
    =============================== */
 
 function analyzePhenotypes(cells) {
   const stats = {};
-  cells.forEach(p => stats[p.text] = (stats[p.text] || 0) + 1);
+
+  cells.forEach(p => {
+    if (!stats[p.text]) {
+      stats[p.text] = {
+        text: p.text,
+        visual: p.visual,
+        count: 0
+      };
+    }
+    stats[p.text].count++;
+  });
+
   const total = cells.length;
 
-  return Object.entries(stats).map(([text, count]) => ({
-    text,
-    count,
-    percent: ((count / total) * 100).toFixed(1)
+  return Object.values(stats).map(p => ({
+    text: p.text,
+    visual: p.visual,
+    count: p.count,
+    percent: ((p.count / total) * 100).toFixed(1)
   }));
 }
 
 /* ===============================
-   8. RENDERS
+   8. RENDERS (EMOTIONAL)
    =============================== */
 
 function renderPhenotypeVisualFromAnalysis(a) {
@@ -226,7 +248,11 @@ function renderPhenotypeVisualFromAnalysis(a) {
   a.forEach(p => {
     const d = document.createElement("div");
     d.className = "phenotype-trait";
-    d.innerHTML = `<div class="phenotype-text">${p.text}<br>${p.percent}%</div>`;
+    d.innerHTML = `
+      <div class="phenotype-symbol">${p.visual}</div>
+      <div class="phenotype-text">${p.text}</div>
+      <div class="phenotype-percent">${p.percent}%</div>
+    `;
     phenotypeVisual.appendChild(d);
   });
 }
@@ -235,7 +261,7 @@ function renderPhenotypeList(a) {
   phenotypeList.innerHTML = "";
   a.forEach(p => {
     const li = document.createElement("li");
-    li.textContent = `${p.text} — ${p.percent}% (${p.count})`;
+    li.textContent = `${p.visual} ${p.text} — ${p.percent}% (${p.count})`;
     phenotypeList.appendChild(li);
   });
 }
@@ -244,21 +270,21 @@ function renderPhenotypeStats(a) {
   phenotypeStats.innerHTML = "";
   a.forEach(p => {
     phenotypeStats.innerHTML +=
-      `<div class="phenotype-stat"><span>${p.text}</span> — ${p.percent}%</div>`;
+      `<div class="phenotype-stat"><span>${p.visual} ${p.text}</span> — ${p.percent}%</div>`;
   });
 }
 
 function renderExplanationFromAnalysis(a) {
   explanationText.textContent =
-    a.map(p => `• ${p.text} — ${p.percent}%`).join("\n");
+    a.map(p => `• ${p.visual} ${p.text} — ${p.percent}%`).join("\n");
 }
 
 function renderAlleleLegend() {
   alleleLegend.innerHTML = "";
   Object.entries(organisms[organism.value].traits).forEach(([g, t]) => {
     alleleLegend.innerHTML +=
-      `<div class="allele-item"><strong>${g}</strong> — ${t.dominant.text}<br>
-       <strong>${g.toLowerCase()}</strong> — ${t.recessive.text}</div>`;
+      `<div class="allele-item"><strong>${g}</strong> — ${t.dominant.text} ${t.dominant.symbol}<br>
+       <strong>${g.toLowerCase()}</strong> — ${t.recessive.text} ${t.recessive.symbol}</div>`;
   });
 }
 
