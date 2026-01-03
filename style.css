@@ -147,11 +147,57 @@ input[type="range"] {
   color: var(--text-main);
   border: 1px solid var(--border);
   border-radius: var(--radius-small);
+  transition: border-color var(--transition), opacity var(--transition);
 }
 
 select:hover,
 input:hover {
   border-color: var(--accent);
+}
+
+select:disabled,
+input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   6.1 RANGE VALUE
+   =============================== */
+
+.range-value {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-align: right;
+}
+
+/* ===============================
+   6.2 RANGE SLIDER STYLE
+   =============================== */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 /* ===============================
@@ -327,7 +373,7 @@ input:hover {
 }
 
 /* ===============================
-   11.2 CHART (CANVAS)
+   11.2 CHART
    =============================== */
 
 canvas {
