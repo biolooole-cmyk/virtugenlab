@@ -2,7 +2,7 @@
    VIRTUAL GENETIC LAB – CORE LOGIC
    Level: Grade 9 (Advanced)
    DEMO: Punnett table (mono / di / tri)
-   EXPERIMENT: stochastic simulation
+   EXPERIMENT: stochastic simulation with meiosis
    ===================================================== */
 
 /* ===============================
@@ -91,7 +91,6 @@ function createParentUI(containerId) {
 
   getActiveGenes().forEach(gene => {
     const select = document.createElement("select");
-
     [
       gene + gene,
       gene + gene.toLowerCase(),
@@ -102,7 +101,6 @@ function createParentUI(containerId) {
       opt.textContent = v;
       select.appendChild(opt);
     });
-
     el.appendChild(select);
   });
 }
@@ -114,7 +112,7 @@ function initParents() {
 }
 
 /* ===============================
-   4. GAMETES
+   4. PURE MENDELIAN GAMETES (DEMO)
    =============================== */
 
 function generateGametesDeterministic(genotypes) {
@@ -123,29 +121,63 @@ function generateGametesDeterministic(genotypes) {
   genotypes.forEach(pair => {
     const alleles =
       pair[0] === pair[1] ? [pair[0]] : [pair[0], pair[1]];
-
-    gametes = gametes.flatMap(g =>
-      alleles.map(a => g + a)
-    );
+    gametes = gametes.flatMap(g => alleles.map(a => g + a));
   });
 
   return gametes;
 }
 
-function getRandomGamete(genotypes) {
-  const gametes = generateGametesDeterministic(genotypes);
-  return gametes[Math.floor(Math.random() * gametes.length)];
+/* ===============================
+   5. MEIOSIS MECHANICS (EXPERIMENT)
+   =============================== */
+
+// --- Mutation ---
+function mutateAllele(allele) {
+  const rate = Number(mutationRate.value) / 100;
+  if (Math.random() < rate) {
+    return allele === allele.toUpperCase()
+      ? allele.toLowerCase()
+      : allele.toUpperCase();
+  }
+  return allele;
+}
+
+// --- Proper crossover between homologous chromosomes ---
+function performCrossover(chrom1, chrom2) {
+  const rate = Number(crossRate.value) / 100;
+  if (Math.random() >= rate) return [chrom1, chrom2];
+
+  const point = Math.floor(Math.random() * (chrom1.length - 1)) + 1;
+
+  const new1 = [...chrom1.slice(0, point), ...chrom2.slice(point)];
+  const new2 = [...chrom2.slice(0, point), ...chrom1.slice(point)];
+
+  return [new1, new2];
+}
+
+// --- Gamete formation ---
+function formGamete(genotypes) {
+  let chrom1 = [];
+  let chrom2 = [];
+
+  genotypes.forEach(pair => {
+    chrom1.push(pair[0]);
+    chrom2.push(pair[1]);
+  });
+
+  [chrom1, chrom2] = performCrossover(chrom1, chrom2);
+
+  const selected = Math.random() < 0.5 ? chrom1 : chrom2;
+
+  return selected.map(a => mutateAllele(a)).join("");
 }
 
 /* ===============================
-   5. PHENOTYPE
+   6. PHENOTYPE
    =============================== */
 
 function getPhenotype(genotype, orgKey) {
-  const phenotype = {
-    traits: [],
-    textParts: []
-  };
+  const phenotype = { traits: [], textParts: [] };
 
   Object.entries(genotype).forEach(([gene, pair]) => {
     const tr = organisms[orgKey].traits[gene];
@@ -162,15 +194,12 @@ function getPhenotype(genotype, orgKey) {
 }
 
 /* ===============================
-   6. ANALYSIS
+   7. ANALYSIS
    =============================== */
 
 function analyzePhenotypes(cells) {
   const stats = {};
-  cells.forEach(p => {
-    stats[p.text] = (stats[p.text] || 0) + 1;
-  });
-
+  cells.forEach(p => stats[p.text] = (stats[p.text] || 0) + 1);
   const total = cells.length;
 
   return Object.entries(stats).map(([text, count]) => ({
@@ -181,7 +210,7 @@ function analyzePhenotypes(cells) {
 }
 
 /* ===============================
-   7. RENDERS
+   8. RENDERS
    =============================== */
 
 function renderAlleleLegend() {
@@ -197,78 +226,7 @@ function renderAlleleLegend() {
   });
 }
 
-function renderPhenotypeVisualFromAnalysis(analysis) {
-  const el = document.getElementById("phenotypeVisual");
-  el.innerHTML = "";
-
-  analysis.forEach(a => {
-    const symbols = [];
-
-    Object.values(organisms[organism.value].traits).forEach(tr => {
-      if (a.text.includes(tr.dominant.text)) symbols.push(tr.dominant.symbol);
-      if (a.text.includes(tr.recessive.text)) symbols.push(tr.recessive.symbol);
-    });
-
-    el.innerHTML += `
-      <div class="phenotype-trait">
-        <div class="phenotype-symbol">${symbols.join(" ")}</div>
-        <div class="phenotype-text">${a.text} (${a.percent}%)</div>
-      </div>`;
-  });
-}
-
-function renderPhenotypeList(analysis) {
-  const list = document.getElementById("phenotypeList");
-  list.innerHTML = "";
-
-  analysis.forEach(a => {
-    const li = document.createElement("li");
-    li.textContent = `${a.text} — ${a.percent}% (${a.count})`;
-    list.appendChild(li);
-  });
-}
-
-function renderPhenotypeStats(analysis) {
-  const el = document.getElementById("phenotypeStats");
-  el.innerHTML = "";
-
-  analysis.forEach(a => {
-    el.innerHTML += `
-      <div class="phenotype-stat">
-        <span>${a.text}</span> — ${a.percent}% (${a.count})
-      </div>`;
-  });
-}
-
-function renderExplanationFromAnalysis(analysis) {
-  const el = document.getElementById("explanationText");
-  el.textContent = analysis
-    .map(a => `• ${a.text} — ${a.percent}%`)
-    .join("\n");
-}
-
-/* ===============================
-   8. DEMO: PUNNETT TABLE
-   =============================== */
-
-function runDemo(p1, p2) {
-  const g1 = generateGametesDeterministic(p1);
-  const g2 = generateGametesDeterministic(p2);
-  const phenotypes = [];
-
-  g1.forEach(r =>
-    g2.forEach(c => {
-      const genotype = {};
-      r.split("").forEach((a, i) => {
-        genotype[a.toUpperCase()] =
-          [a, c[i]].sort().join("");
-      });
-      phenotypes.push(getPhenotype(genotype, organism.value));
-    })
-  );
-
-  const analysis = analyzePhenotypes(phenotypes);
-
+function renderAll(analysis) {
   renderPhenotypeVisualFromAnalysis(analysis);
   renderPhenotypeList(analysis);
   renderPhenotypeStats(analysis);
@@ -276,7 +234,27 @@ function runDemo(p1, p2) {
 }
 
 /* ===============================
-   9. EXPERIMENT: STOCHASTIC
+   9. DEMO MODE
+   =============================== */
+
+function runDemo(p1, p2) {
+  const phenotypes = [];
+
+  generateGametesDeterministic(p1).forEach(g1 =>
+    generateGametesDeterministic(p2).forEach(g2 => {
+      const genotype = {};
+      g1.split("").forEach((a, i) => {
+        genotype[a.toUpperCase()] = [a, g2[i]].sort().join("");
+      });
+      phenotypes.push(getPhenotype(genotype, organism.value));
+    })
+  );
+
+  renderAll(analyzePhenotypes(phenotypes));
+}
+
+/* ===============================
+   10. EXPERIMENT MODE
    =============================== */
 
 function runExperiment(p1, p2) {
@@ -284,45 +262,35 @@ function runExperiment(p1, p2) {
   const phenotypes = [];
 
   for (let i = 0; i < runs; i++) {
-    const g1 = getRandomGamete(p1);
-    const g2 = getRandomGamete(p2);
+    const g1 = formGamete(p1);
+    const g2 = formGamete(p2);
 
     const genotype = {};
     g1.split("").forEach((a, i) => {
-      genotype[a.toUpperCase()] =
-        [a, g2[i]].sort().join("");
+      genotype[a.toUpperCase()] = [a, g2[i]].sort().join("");
     });
 
     phenotypes.push(getPhenotype(genotype, organism.value));
   }
 
-  const analysis = analyzePhenotypes(phenotypes);
-
-  renderPhenotypeVisualFromAnalysis(analysis);
-  renderPhenotypeList(analysis);
-  renderPhenotypeStats(analysis);
-  renderExplanationFromAnalysis(analysis);
+  renderAll(analyzePhenotypes(phenotypes));
 }
 
 /* ===============================
-   10. MAIN CONTROLLER
+   11. MAIN CONTROLLER
    =============================== */
 
 function runSimulation() {
   const p1 = [...parent1.querySelectorAll("select")].map(s => s.value);
   const p2 = [...parent2.querySelectorAll("select")].map(s => s.value);
 
-  if (mode.value === MODES.DEMO) {
-    runDemo(p1, p2);
-  }
-
-  if (mode.value === MODES.EXPERIMENT) {
-    runExperiment(p1, p2);
-  }
+  mode.value === MODES.DEMO
+    ? runDemo(p1, p2)
+    : runExperiment(p1, p2);
 }
 
 /* ===============================
-   11. EVENTS
+   12. EVENTS
    =============================== */
 
 organism.onchange = initParents;
