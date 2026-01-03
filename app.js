@@ -117,13 +117,16 @@ function createParentUI(containerId) {
 
   getActiveGenes().forEach(gene => {
     const select = document.createElement("select");
-    [gene + gene, gene + gene.toLowerCase(), gene.toLowerCase() + gene.toLowerCase()]
-      .forEach(v => {
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        select.appendChild(opt);
-      });
+    [
+      gene + gene,
+      gene + gene.toLowerCase(),
+      gene.toLowerCase() + gene.toLowerCase()
+    ].forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      select.appendChild(opt);
+    });
     el.appendChild(select);
   });
 }
@@ -190,7 +193,9 @@ function getPhenotype(genotype, orgKey) {
   const ph = { textParts: [] };
   Object.entries(genotype).forEach(([gene, pair]) => {
     const tr = organisms[orgKey].traits[gene];
-    ph.textParts.push(pair.includes(gene) ? tr.dominant.text : tr.recessive.text);
+    ph.textParts.push(
+      pair.includes(gene) ? tr.dominant.text : tr.recessive.text
+    );
   });
   ph.text = ph.textParts.join(", ");
   return ph;
@@ -285,12 +290,15 @@ function renderAll(a) {
 function runDemo(p1, p2) {
   const g1 = generateGametesDeterministic(p1);
   const g2 = generateGametesDeterministic(p2);
+
   renderPunnettTable(g1, g2);
 
   const phenotypes = [];
   g1.forEach(r => g2.forEach(c => {
     const gt = {};
-    r.split("").forEach((a, i) => gt[a.toUpperCase()] = [a, c[i]].sort().join(""));
+    r.split("").forEach((a, i) => {
+      gt[a.toUpperCase()] = [a, c[i]].sort().join("");
+    });
     phenotypes.push(getPhenotype(gt, organism.value));
   }));
 
@@ -307,7 +315,10 @@ function runExperiment(p1, p2) {
     const g2 = formGamete(p2);
 
     const gt = {};
-    g1.split("").forEach((a, i) => gt[a.toUpperCase()] = [a, g2[i]].sort().join(""));
+    g1.split("").forEach((a, i) => {
+      gt[a.toUpperCase()] = [a, g2[i]].sort().join("");
+    });
+
     phenotypes.push(getPhenotype(gt, organism.value));
   }
 
@@ -321,15 +332,26 @@ function runExperiment(p1, p2) {
 function runSimulation() {
   const p1 = [...parent1.querySelectorAll("select")].map(s => s.value);
   const p2 = [...parent2.querySelectorAll("select")].map(s => s.value);
-  mode.value === MODES.DEMO ? runDemo(p1, p2) : runExperiment(p1, p2);
+
+  mode.value === MODES.DEMO
+    ? runDemo(p1, p2)
+    : runExperiment(p1, p2);
 }
 
 /* ===============================
    11. EVENTS
    =============================== */
 
-organism.onchange = initParents;
-crossType.onchange = initParents;
+organism.onchange = () => {
+  initParents();
+  runSimulation();
+};
+
+crossType.onchange = () => {
+  initParents();
+  runSimulation();
+};
+
 runCross.onclick = runSimulation;
 
 mutationRate.oninput = () => {
@@ -346,10 +368,12 @@ mode.onchange = () => {
   const demo = mode.value === MODES.DEMO;
   mutationRate.disabled = demo;
   crossRate.disabled = demo;
+  runSimulation();
 };
 
 mutationValue.textContent = `${mutationRate.value}%`;
 crossValue.textContent = `${crossRate.value}%`;
-mode.onchange();
 
+mode.onchange();
 initParents();
+runSimulation();
