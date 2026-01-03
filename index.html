@@ -28,14 +28,14 @@
       <h3>Основні налаштування</h3>
 
       <label for="organism">Організм</label>
-      <select id="organism">
+      <select id="organism" aria-label="Вибір організму">
         <option value="human" selected>Людина</option>
         <option value="cat">Кіт</option>
         <option value="rose">Роза</option>
       </select>
 
       <label for="crossType">Тип схрещування</label>
-      <select id="crossType">
+      <select id="crossType" aria-label="Тип схрещування">
         <option value="1">Моногібридне</option>
         <option value="2">Дигібридне</option>
         <option value="3">Тригібридне</option>
@@ -54,7 +54,8 @@
         min="0"
         max="10"
         step="1"
-        value="0">
+        value="0"
+        aria-label="Ймовірність мутацій">
       <div class="range-value">
         <span id="mutationValue">0%</span>
       </div>
@@ -66,7 +67,8 @@
         min="0"
         max="50"
         step="5"
-        value="0">
+        value="0"
+        aria-label="Інтенсивність кросинговеру">
       <div class="range-value">
         <span id="crossValue">0%</span>
       </div>
@@ -77,7 +79,7 @@
       <h3>Режим роботи</h3>
 
       <label for="mode">Режим</label>
-      <select id="mode">
+      <select id="mode" aria-label="Режим роботи">
         <option value="demo">Демонстрація (таблиця Пеннета)</option>
         <option value="experiment">Віртуальний експеримент</option>
       </select>
@@ -88,7 +90,8 @@
         id="experimentCount"
         min="10"
         step="10"
-        value="100">
+        value="100"
+        aria-label="Кількість симуляцій">
     </div>
 
   </section>
@@ -114,7 +117,7 @@
 
   <!-- ================= ACTION ================= -->
   <section class="actions">
-    <button id="runCross" class="run-btn">
+    <button id="runCross" class="run-btn" aria-label="Запустити схрещування">
       ▶ Запустити схрещування
     </button>
   </section>
@@ -126,9 +129,15 @@
     <div class="card wide">
       <h3>Таблиця Пеннета / Результати</h3>
 
+      <!-- Легенда алелей -->
       <div class="punnett-legend">
-        <span class="dominant">Домінантний алель</span>
-        <span class="recessive">Рецесивний алель</span>
+        <span class="dominant">Домінантний алель (A)</span>
+        <span class="recessive">Рецесивний алель (a)</span>
+      </div>
+
+      <!-- 🔹 Пояснення алелей -->
+      <div id="alleleLegend" class="allele-legend" aria-label="Пояснення алелей">
+        <!-- A → ознака, a → ознака (генерується з app.js) -->
       </div>
 
       <div id="punnett" class="punnett-container">
@@ -136,13 +145,18 @@
       </div>
     </div>
 
-    <!-- === PHENOTYPES + CHART === -->
+    <!-- === PHENOTYPES + ANALYSIS === -->
     <div class="card">
       <h3>Фенотипи потомства</h3>
 
       <ul id="phenotypeList" class="phenotype-list">
         <!-- список фенотипів -->
       </ul>
+
+      <!-- 🔹 Статистичний аналіз -->
+      <div id="phenotypeStats" class="phenotype-stats" aria-label="Статистика фенотипів">
+        <!-- % та співвідношення -->
+      </div>
 
       <canvas
         id="chart"
@@ -185,4 +199,3 @@
 
 </body>
 </html>
-
