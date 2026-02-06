@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Віртуальна генетична лабораторія</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Основні стилі -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ================= HEADER ================= -->
+  <header>
+    <h1>🧬 Віртуальна генетична лабораторія</h1>
+    <p class="subtitle">
+      Поглиблена модель спадковості (9 клас)
+    </p>
+  </header>
+
+  <!-- ================= CONTROL PANEL ================= -->
+  <section class="panel" aria-label="Панель керування лабораторією">
+
+    <!-- === BASIC SETTINGS === -->
+    <div class="card">
+      <h3>Основні налаштування</h3>
+
+      <label for="organism">Організм</label>
+      <select id="organism" aria-label="Вибір організму">
+        <option value="human" selected>Людина</option>
+        <option value="cat">Кіт</option>
+        <option value="rose">Роза</option>
+      </select>
+
+      <label for="crossType">Тип схрещування</label>
+      <select id="crossType" aria-label="Тип схрещування">
+        <option value="1">Моногібридне</option>
+        <option value="2">Дигібридне</option>
+        <option value="3">Тригібридне</option>
+      </select>
+
+      <!-- Пояснення алелей -->
+      <div id="alleleLegend" class="allele-legend-top" aria-label="Пояснення алелей">
+        <!-- генерується з app.js -->
+      </div>
+    </div>
+
+    <!-- === GENETIC PARAMETERS === -->
+    <div class="card">
+      <h3>Генетичні параметри</h3>
+
+      <label for="dominanceType">Тип домінування</label>
+      <select id="dominanceType" aria-label="Тип домінування">
+        <option value="complete" selected>Повне домінування</option>
+        <option value="incomplete">Неповне домінування</option>
+      </select>
+
+      <label for="mutationRate">Ймовірність мутацій</label>
+      <input
+        type="range"
+        id="mutationRate"
+        min="0"
+        max="10"
+        step="1"
+        value="0"
+        aria-label="Ймовірність мутацій">
+      <div class="range-value">
+        <span id="mutationValue">0%</span>
+      </div>
+
+      <label for="crossRate">Кросинговер</label>
+      <input
+        type="range"
+        id="crossRate"
+        min="0"
+        max="50"
+        step="5"
+        value="0"
+        aria-label="Інтенсивність кросинговеру">
+      <div class="range-value">
+        <span id="crossValue">0%</span>
+      </div>
+    </div>
+
+    <!-- === MODE === -->
+    <div class="card">
+      <h3>Режим роботи</h3>
+
+      <label for="mode">Режим</label>
+      <select id="mode" aria-label="Режим роботи">
+        <option value="demo">Демонстрація (таблиця Пеннета)</option>
+        <option value="experiment">Віртуальний експеримент</option>
+      </select>
+
+      <label for="experimentCount">Кількість схрещувань</label>
+      <input
+        type="number"
+        id="experimentCount"
+        min="10"
+        step="10"
+        value="100"
+        aria-label="Кількість симуляцій">
+    </div>
+
+  </section>
+
+  <!-- ================= PARENTS ================= -->
+  <section class="parents" aria-label="Батьківські організми">
+
+    <div class="card">
+      <h3>Батько / Мати 1</h3>
+      <div id="parent1" class="genotype-inputs">
+        <!-- генотипи генеруються з app.js -->
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Батько / Мати 2</h3>
+      <div id="parent2" class="genotype-inputs">
+        <!-- генотипи генеруються з app.js -->
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ================= ACTION ================= -->
+  <section class="actions">
+    <button id="runCross" class="run-btn" aria-label="Запустити схрещування">
+      ▶ Запустити схрещування
+    </button>
+  </section>
+
+  <!-- ================= RESULTS ================= -->
+  <section class="results" aria-live="polite">
+
+    <!-- === PUNNETT TABLE / DEMO === -->
+    <div class="card wide">
+      <h3>Таблиця Пеннета / Результати</h3>
+
+      <!-- Легенда алелей -->
+      <div class="punnett-legend">
+        <span class="dominant">Домінантний алель (A)</span>
+        <span class="recessive">Рецесивний алель (a)</span>
+      </div>
+
+      <div id="punnett" class="punnett-container">
+        <!-- таблиця генерується з app.js -->
+      </div>
+    </div>
+
+
+  </section>
+
+  <!-- ================= PHENOTYPE VISUAL ================= -->
+  <section class="card phenotype-visual" aria-label="Візуалізація фенотипу">
+    <h3>Візуалізація фенотипу потомства</h3>
+    <div id="phenotypeVisual">
+      <!-- emoji / символи фенотипів -->
+    </div>
+  </section>
+
+  <!-- ================= EXPLANATION ================= -->
+  <section class="card explanation" aria-label="Пояснення результатів">
+    <h3>Пояснення результатів</h3>
+    <p id="explanationText">
+      <!-- пояснення з app.js -->
+    </p>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <p>
+      Навчальна модель. Реальна генетика спрощена для освітніх цілей.
+      Кросинговер змодельований умовно для демонстрації принципу.
+    </p>
+  </footer>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script src="app.js"></script>
+
+</body>
+</html>

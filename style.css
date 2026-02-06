@@ -1,0 +1,659 @@
+/* =====================================================
+   VIRTUAL GENETIC LAB — UI DESIGN SYSTEM
+   Light Theme | Grade 9 Advanced | STEM/Ed-Tech 2025
+   ===================================================== */
+
+/* ===============================
+   1. CSS VARIABLES (DESIGN TOKENS)
+   =============================== */
+
+:root {
+  /* Світлі фони */
+  --bg-main: #ffffff;
+  --bg-panel: #f8f9fa;
+  --bg-card: #ffffff;
+  --bg-secondary: #f1f3f5;
+
+  /* Текст */
+  --text-main: #212529;
+  --text-muted: #6c757d;
+  --text-light: #868e96;
+
+  /* Акценти STEM/Ed-Tech */
+  --accent: #0d6efd;
+  --accent-soft: rgba(13, 110, 253, 0.1);
+  --accent-teal: #20c997;
+  --accent-purple: #6f42c1;
+  --accent-green: #198754;
+
+  /* Границі */
+  --border: #dee2e6;
+  --border-light: #e9ecef;
+  --border-dark: #ced4da;
+
+  /* Статуси */
+  --success: #198754;
+  --warning: #ffc107;
+  --info: #0dcaf0;
+
+  /* 🧬 Генетичні кольори */
+  --dominant-bg: rgba(13, 110, 253, 0.1);
+  --dominant-text: #0d6efd;
+  --dominant-border: rgba(13, 110, 253, 0.3);
+
+  --recessive-bg: rgba(108, 117, 125, 0.1);
+  --recessive-text: #6c757d;
+  --recessive-border: rgba(108, 117, 125, 0.3);
+
+  --intermediate-bg: rgba(111, 66, 193, 0.1);
+  --intermediate-text: #6f42c1;
+  --intermediate-border: rgba(111, 66, 193, 0.3);
+
+  /* Візуальні елементи */
+  --radius: 16px;
+  --radius-small: 10px;
+  --radius-large: 20px;
+
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* ===============================
+   2. GLOBAL RESET
+   =============================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+body {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f1f3f5 100%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ===============================
+   3. APP LAYOUT
+   =============================== */
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ===============================
+   4. HEADER
+   =============================== */
+
+header {
+  text-align: center;
+}
+
+header h1 {
+  font-size: 3.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #0d6efd, #20c997, #6f42c1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+/* ===============================
+   5. PANELS & CARDS
+   =============================== */
+
+.panel,
+.parents,
+.results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  backdrop-filter: blur(10px);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent);
+}
+
+.card.wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 900px) {
+  .card.wide {
+    grid-column: span 1;
+  }
+}
+
+.card h3 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0d6efd, #20c997);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.01em;
+}
+
+/* ===============================
+   6. FORM ELEMENTS
+   =============================== */
+
+label {
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+select,
+input[type="number"],
+input[type="range"] {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-secondary);
+  color: var(--text-main);
+  font-size: 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-small);
+  transition: all var(--transition);
+  font-weight: 500;
+}
+
+select:hover,
+input[type="number"]:hover {
+  border-color: var(--accent);
+  background: var(--bg-main);
+}
+
+select:focus,
+input[type="number"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  background: var(--bg-main);
+  outline: none;
+}
+
+select:hover,
+input:hover {
+  border-color: var(--accent);
+}
+
+select:disabled,
+input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   6.1 RANGE VALUE
+   =============================== */
+
+.range-value {
+  margin-top: 8px;
+  font-size: 1rem;
+  color: var(--accent);
+  font-weight: 700;
+  text-align: right;
+}
+
+/* ===============================
+   6.2 RANGE SLIDER STYLE
+   =============================== */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 8px;
+  background: var(--border-light);
+  border-radius: 999px;
+  border: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-teal));
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+  transition: transform var(--transition);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-teal));
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+}
+
+/* ===============================
+   7. GENOTYPE INPUTS
+   =============================== */
+
+.genotype-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.gene-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Фенотипна плашка над select */
+.phenotype-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-small);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: transform var(--transition), box-shadow var(--transition);
+  border: 1px solid transparent;
+}
+
+.phenotype-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.phenotype-dominant {
+  background: linear-gradient(135deg, var(--dominant-bg), rgba(13, 110, 253, 0.15));
+  border-color: var(--dominant-border);
+  color: var(--dominant-text);
+}
+
+.phenotype-recessive {
+  background: linear-gradient(135deg, var(--recessive-bg), rgba(108, 117, 125, 0.15));
+  border-color: var(--recessive-border);
+  color: var(--recessive-text);
+}
+
+.phenotype-intermediate {
+  background: linear-gradient(135deg, var(--intermediate-bg), rgba(111, 66, 193, 0.15));
+  border-color: var(--intermediate-border);
+  color: var(--intermediate-text);
+}
+
+.phenotype-badge-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.phenotype-badge-text {
+  flex: 1;
+  font-weight: 600;
+}
+
+/* ===============================
+   8. BUTTON
+   =============================== */
+
+.run-btn {
+  background: linear-gradient(135deg, #0d6efd, #20c997, #6f42c1);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 16px 40px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 4px 16px rgba(13, 110, 253, 0.3);
+  letter-spacing: 0.01em;
+}
+
+.run-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(13, 110, 253, 0.4);
+}
+
+.run-btn:active {
+  transform: translateY(-1px);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+/* ===============================
+   9. ICONS
+   =============================== */
+
+.icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 2px;
+}
+
+/* ===============================
+   10. PUNNETT TABLE
+   =============================== */
+
+.punnett-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  margin-top: 16px;
+}
+
+.punnett-table th,
+.punnett-table td {
+  border: 1px solid var(--border);
+  padding: 12px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.punnett-table th {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-panel));
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.punnett-table td {
+  background: var(--bg-main);
+  transition: all var(--transition);
+  cursor: help;
+}
+
+.punnett-table td:hover {
+  background: var(--bg-secondary);
+  transform: scale(1.08);
+  z-index: 1;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+
+.gamete-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gamete-phenotype {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.punnett-cell {
+  position: relative;
+}
+
+.punnett-genotype {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+
+.punnett-phenotype {
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+/* ===============================
+   10.1 DOMINANT / RECESSIVE
+   =============================== */
+
+.allele-dominant {
+  background: var(--dominant-bg);
+  color: var(--dominant-text);
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.allele-recessive {
+  background: var(--recessive-bg);
+  color: var(--recessive-text);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+/* ===============================
+   10.2 ALLELE LEGEND
+   =============================== */
+
+.allele-legend-top {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid var(--border);
+}
+
+.allele-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.allele-item {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-small);
+  padding: 14px;
+  font-size: 0.95rem;
+  transition: all var(--transition);
+  line-height: 1.6;
+}
+
+.allele-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: var(--accent);
+  background: var(--bg-main);
+}
+
+.allele-item strong {
+  color: var(--accent);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* ===============================
+   11. PHENOTYPE VISUALIZATION
+   =============================== */
+
+#phenotypeVisual {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.phenotype-trait {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-small);
+  padding: 18px 12px;
+  text-align: center;
+  transition: all var(--transition);
+}
+
+.phenotype-trait:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: var(--accent);
+  background: var(--bg-main);
+}
+
+.phenotype-symbol {
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.phenotype-text {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+/* ===============================
+   11.1 PHENOTYPE STATS
+   =============================== */
+
+.phenotype-stats {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.phenotype-stat {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-small);
+  padding: 12px;
+  font-size: 1rem;
+  transition: all var(--transition);
+}
+
+.phenotype-stat:hover {
+  transform: translateX(6px);
+  border-color: var(--accent);
+  background: var(--bg-main);
+  box-shadow: var(--shadow);
+}
+
+.phenotype-stat span {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ===============================
+   11.2 CHART
+   =============================== */
+
+canvas {
+  display: block;
+  margin: 20px auto 0;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow);
+}
+
+/* ===============================
+   12. EXPLANATION
+   =============================== */
+
+.explanation p {
+  font-size: 1.05rem;
+  color: var(--text-main);
+  white-space: pre-line;
+  line-height: 1.9;
+  font-weight: 500;
+}
+
+/* ===============================
+   13. PUNNETT LEGEND
+   =============================== */
+
+.punnett-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.punnett-legend .dominant,
+.punnett-legend .recessive {
+  padding: 8px 14px;
+  border-radius: var(--radius-small);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.punnett-legend .dominant {
+  background: var(--dominant-bg);
+  color: var(--dominant-text);
+  border: 2px solid var(--dominant-border);
+}
+
+.punnett-legend .recessive {
+  background: var(--recessive-bg);
+  color: var(--recessive-text);
+  border: 2px solid var(--recessive-border);
+}
+
+/* ===============================
+   14. FOOTER
+   =============================== */
+
+footer {
+  text-align: center;
+  padding: 32px 20px;
+  margin-top: 40px;
+  border-top: 2px solid var(--border);
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+}
+
+footer p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 800px;
+  margin: 0 auto;
+}
